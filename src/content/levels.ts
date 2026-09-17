@@ -1,5 +1,12 @@
 export type LevelStatus = 'available' | 'coming-soon';
 export type Theme = 'regions' | 'drugs' | 'disorders';
+export type Vec3 = [number, number, number];
+
+/** Where a level lives on the shared brain mesh: real node prefixes, an approximate marker, or both. */
+export interface Anatomy {
+  nodePrefixes?: string[];
+  marker?: Vec3;
+}
 
 export interface LevelEntry {
   id: string;
@@ -7,6 +14,7 @@ export interface LevelEntry {
   plainName: string;
   theme: Theme;
   status: LevelStatus;
+  anatomy: Anatomy;
 }
 
 export const hubCopy = {
@@ -14,6 +22,8 @@ export const hubCopy = {
   tagline: 'Cause a lesion. Predict what breaks. Watch the brain rewire.',
   comingSoon: 'Coming soon',
   enter: 'Play',
+  approximate: 'approximate position',
+  hint: 'Drag to turn the brain. Glowing regions are playable.',
 };
 
 export const themeTitles: Record<Theme, string> = {
@@ -23,15 +33,26 @@ export const themeTitles: Record<Theme, string> = {
 };
 
 export const levels: LevelEntry[] = [
-  { id: 'motor-cortex', name: 'Primary motor cortex', plainName: 'Movement', theme: 'regions', status: 'available' },
-  { id: 'somatosensory-cortex', name: 'Somatosensory cortex', plainName: 'Touch', theme: 'regions', status: 'coming-soon' },
-  { id: 'visual-cortex', name: 'Visual cortex', plainName: 'Sight', theme: 'regions', status: 'coming-soon' },
-  { id: 'speech-areas', name: "Broca's & Wernicke's areas", plainName: 'Speech', theme: 'regions', status: 'coming-soon' },
-  { id: 'prefrontal-cortex', name: 'Prefrontal cortex', plainName: 'Decisions', theme: 'regions', status: 'coming-soon' },
-  { id: 'hippocampus', name: 'Hippocampus', plainName: 'Memory', theme: 'regions', status: 'coming-soon' },
-  { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'available' },
-  { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'coming-soon' },
-  { id: 'basal-ganglia', name: 'Basal ganglia', plainName: 'Habit & initiation', theme: 'regions', status: 'coming-soon' },
-  { id: 'brainstem', name: 'Hypothalamus & brainstem', plainName: 'Survival', theme: 'regions', status: 'coming-soon' },
-  { id: 'drugs-classes', name: 'Alcohol, cocaine, morphine', plainName: 'Chemistry', theme: 'drugs', status: 'available' },
+  { id: 'motor-cortex', name: 'Primary motor cortex', plainName: 'Movement', theme: 'regions', status: 'available',
+    anatomy: { nodePrefixes: ['PrecentralGyrus'] } },
+  { id: 'somatosensory-cortex', name: 'Somatosensory cortex', plainName: 'Touch', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [30, 58, -15] } },
+  { id: 'visual-cortex', name: 'Visual cortex', plainName: 'Sight', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [0, 5, -70] } },
+  { id: 'speech-areas', name: "Broca's & Wernicke's areas", plainName: 'Speech', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [-58, 5, 25] } },
+  { id: 'prefrontal-cortex', name: 'Prefrontal cortex', plainName: 'Decisions', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [0, 25, 66] } },
+  { id: 'hippocampus', name: 'Hippocampus', plainName: 'Memory', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [-28, -20, -12] } },
+  { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'available',
+    anatomy: { nodePrefixes: ['Amygdala'] } },
+  { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'coming-soon',
+    anatomy: { nodePrefixes: ['Cerebellum'] } },
+  { id: 'basal-ganglia', name: 'Basal ganglia', plainName: 'Habit & initiation', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [-22, -8, 8] } },
+  { id: 'brainstem', name: 'Hypothalamus & brainstem', plainName: 'Survival', theme: 'regions', status: 'coming-soon',
+    anatomy: { marker: [0, -50, -12] } },
+  { id: 'drugs-classes', name: 'Alcohol, cocaine, morphine', plainName: 'Chemistry', theme: 'drugs', status: 'available',
+    anatomy: { nodePrefixes: ['Caudate', 'Putamen'], marker: [0, -18, -6] } },
 ];

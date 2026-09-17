@@ -15,6 +15,19 @@ describe('level registry', () => {
     ]);
   });
 
+  it('places every level on the brain by node prefix or marker', () => {
+    for (const level of levels) {
+      const { nodePrefixes, marker } = level.anatomy;
+      expect((nodePrefixes?.length ?? 0) > 0 || marker !== undefined).toBe(true);
+    }
+  });
+
+  it('gives every available level real mesh nodes to glow', () => {
+    for (const level of levels.filter((l) => l.status === 'available')) {
+      expect(level.anatomy.nodePrefixes?.length ?? 0).toBeGreaterThan(0);
+    }
+  });
+
   it('names every level in both clinical and plain terms', () => {
     for (const level of levels) {
       expect(level.name.length).toBeGreaterThan(0);
