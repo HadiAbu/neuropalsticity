@@ -9,6 +9,8 @@ import { SimulationProvider as DrugsSimulation } from '@levels/drugs/useSimulati
 import { HippocampusLevel } from '@levels/hippocampus/HippocampusLevel';
 import { SimulationProvider as HippocampusSimulation } from '@levels/hippocampus/useSimulation';
 import { MotorCortexLevel } from '@levels/motor-cortex/MotorCortexLevel';
+import { ParkinsonsLevel } from '@levels/parkinsons/ParkinsonsLevel';
+import { SimulationProvider as ParkinsonsSimulation } from '@levels/parkinsons/useSimulation';
 import { SomatosensoryCortexLevel } from '@levels/somatosensory-cortex/SomatosensoryCortexLevel';
 import { SimulationProvider as SomatotopicSimulation } from '@lib/somatotopic/useSimulation';
 
@@ -53,6 +55,12 @@ export default function App() {
         <CerebellumSimulation key={levelId}>
           <CerebellumLevel onExit={exit} />
         </CerebellumSimulation>
+      );
+    case 'parkinsons':
+      return (
+        <ParkinsonsSimulation key={levelId}>
+          <ParkinsonsLevel onExit={exit} />
+        </ParkinsonsSimulation>
       );
     default:
       return <LevelHub onEnter={setLevelId} />;

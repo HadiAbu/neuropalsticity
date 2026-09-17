@@ -55,4 +55,6 @@ export const levels: LevelEntry[] = [
     anatomy: { marker: [0, -50, -12] } },
   { id: 'drugs-classes', name: 'Alcohol, cocaine, morphine', plainName: 'Chemistry', theme: 'drugs', status: 'available',
     anatomy: { nodePrefixes: ['Caudate', 'Putamen'], marker: [0, -18, -6] } },
+  { id: 'parkinsons', name: "Parkinson's disease", plainName: 'Movement disorder', theme: 'disorders', status: 'available',
+    anatomy: { nodePrefixes: ['Caudate', 'Putamen'], marker: [0, -20, -9] } },
 ];

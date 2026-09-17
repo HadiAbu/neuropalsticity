@@ -150,6 +150,27 @@ export interface CoordinationMechanic {
 }
 
 // ---------------------------------------------------------------------------
+// Motor exam mechanic (basal ganglia / Parkinson's, and future movement disorders)
+// ---------------------------------------------------------------------------
+
+export interface MotorExamProfile {
+  restingTremor: boolean;
+  rigidity: 'normal' | 'cogwheel';
+  movementSpeed: 'normal' | 'bradykinetic';
+  posturalStability: 'stable' | 'unstable';
+  behavior: string;
+  report: string;
+}
+
+export type MotorExamTrial = ScenarioTrial<MotorExamProfile>;
+
+export interface MotorExamMechanic {
+  kind: 'motorExam';
+  premise: string;
+  trials: MotorExamTrial[];
+}
+
+// ---------------------------------------------------------------------------
 // Pharmacologic mechanic (drugs & the brain)
 // ---------------------------------------------------------------------------
 
@@ -206,12 +227,14 @@ export type ThreatContent = RegionBase & ThreatMechanic;
 export type PharmacologicContent = RegionBase & PharmacologicMechanic;
 export type MemoryContent = RegionBase & MemoryMechanic;
 export type CoordinationContent = RegionBase & CoordinationMechanic;
+export type MotorExamContent = RegionBase & MotorExamMechanic;
 export type RegionContent =
   | SomatotopicContent
   | ThreatContent
   | PharmacologicContent
   | MemoryContent
-  | CoordinationContent;
+  | CoordinationContent
+  | MotorExamContent;
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -388,6 +411,15 @@ function validateCoordination(content: CoordinationContent): string[] {
   });
 }
 
+function validateMotorExam(content: MotorExamContent): string[] {
+  return validateScenarioTrials('trial', content.trials, (_label, trial) => {
+    const problems: string[] = [];
+    if (!trial.intact) problems.push(`trial ${trial.id} is missing an intact profile`);
+    if (!trial.damaged) problems.push(`trial ${trial.id} is missing a damaged profile`);
+    return problems;
+  });
+}
+
 export function validateRegionContent(content: RegionContent): string[] {
   const problems = validateBase(content);
   switch (content.kind) {
@@ -405,6 +437,9 @@ export function validateRegionContent(content: RegionContent): string[] {
       break;
     case 'coordination':
       problems.push(...validateCoordination(content));
+      break;
+    case 'motorExam':
+      problems.push(...validateMotorExam(content));
       break;
   }
   return problems;
