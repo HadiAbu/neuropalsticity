@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { flowCopy } from '@content/flow';
 import motorCortex from '@content/regions/motor-cortex';
 import type { BodyPart } from '@content/schema';
 import { BrainScene } from '@lib/scene/BrainScene';
 import { CameraRig, type Framing } from '@lib/scene/CameraRig';
 import type { Phase } from '@lib/simulation/machine';
-import { recoveryAt } from '@lib/simulation/recovery';
-import { applyRecovery } from '@lib/simulation/recovery';
+import { applyRecovery, recoveryAt } from '@lib/simulation/recovery';
 import { HomunculusStrip } from '@lib/somatotopic/scene/HomunculusStrip';
 import { LesionMarker } from '@lib/somatotopic/scene/LesionMarker';
 import { resolveDeficit } from '@lib/somatotopic/simulation/resolveDeficit';
@@ -16,12 +14,9 @@ import { InsightPanel } from '@lib/somatotopic/ui/InsightPanel';
 import { PredictionPrompt } from '@lib/somatotopic/ui/PredictionPrompt';
 import { RehabTimeline } from '@lib/somatotopic/ui/RehabTimeline';
 import { SiteChooser } from '@lib/somatotopic/ui/SiteChooser';
-import { ProgressRail } from '@lib/ui/ProgressRail';
+import { LevelShell } from '@lib/ui/LevelShell';
 import { useSimulation } from '@lib/somatotopic/useSimulation';
 import { BrainMesh } from '@levels/motor-cortex/scene/BrainMesh';
-
-const BUTTON =
-  'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
 const FOCUSED: Framing = { position: [80, 50, 215], target: [45, 15, 0] };
 const FRAMING: Partial<Record<Phase, Framing>> = {
@@ -60,45 +55,30 @@ export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
         <LesionMarker content={motorCortex} />
       </BrainScene>
 
-      <header className="absolute left-4 top-4 flex max-w-sm flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <button type="button" className={BUTTON} onClick={onExit}>
-            ← {flowCopy.exit}
-          </button>
-          <h1 className="text-xl font-semibold">{motorCortex.name}</h1>
-        </div>
-        <ProgressRail phase={state.phase} onJump={jumpTo} />
-        {state.phase === 'overview' ? (
-          <div className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
-            <p className="mb-3 text-sm leading-relaxed text-slate-300">{motorCortex.overview}</p>
-            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'FOCUS' })}>
-              Focus the motor strip
-            </button>
-          </div>
-        ) : (
-          <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}>
-            Back to the whole brain
-          </button>
-        )}
-      </header>
-
-      {state.phase !== 'overview' && (
-        <aside className="absolute bottom-4 right-4 top-4 flex w-96 flex-col gap-4 overflow-y-auto">
-          {state.phase === 'focused' && <InsightPanel content={motorCortex} title="Why is the map so lopsided?" />}
-          <SiteChooser content={motorCortex} onHover={setHoveredPart} />
-          <PredictionPrompt content={motorCortex} prompt="Before you look — what stops working?" />
-          <DeficitPanel
-            content={motorCortex}
-            crossingExplanation={CROSSING_EXPLANATION}
-            advanceLabel="What happens next?"
-          />
-          <RehabTimeline content={motorCortex} title="The brain starts rewiring" unitLabel="lost function regained" />
-          <BodyDiagram entries={entries} side={result?.side ?? null} highlighted={hoveredPart} />
-        </aside>
-      )}
+      <LevelShell
+        title={motorCortex.name}
+        overview={motorCortex.overview}
+        focusLabel="Focus the motor strip"
+        phase={state.phase}
+        onFocus={() => dispatch({ type: 'FOCUS' })}
+        onReturnToOverview={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}
+        onJump={jumpTo}
+        onExit={onExit}
+      >
+        {state.phase === 'focused' && <InsightPanel content={motorCortex} title="Why is the map so lopsided?" />}
+        <SiteChooser content={motorCortex} onHover={setHoveredPart} />
+        <PredictionPrompt content={motorCortex} prompt="Before you look — what stops working?" />
+        <DeficitPanel
+          content={motorCortex}
+          crossingExplanation={CROSSING_EXPLANATION}
+          advanceLabel="What happens next?"
+        />
+        <RehabTimeline content={motorCortex} title="The brain starts rewiring" unitLabel="lost function regained" />
+        <BodyDiagram entries={entries} side={result?.side ?? null} highlighted={hoveredPart} />
+      </LevelShell>
 
       {hoveredLabel && (
-        <div className="pointer-events-none absolute bottom-4 left-4 rounded-md bg-slate-800/90 px-3 py-1.5 text-sm shadow-lg">
+        <div className="pointer-events-none absolute bottom-[calc(55vh+1rem)] left-4 z-10 rounded-md bg-slate-800/90 px-3 py-1.5 text-sm shadow-lg sm:bottom-4">
           {hoveredLabel}
         </div>
       )}
