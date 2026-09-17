@@ -59,18 +59,27 @@ The fallback is not a lesser outcome. It may prove easier to art-direct.
 ## Scene Graph
 
 ```
-<Canvas dpr={[1, 2]}>
-  <Suspense fallback={<SceneLoader/>}>
-    <Lighting/>
-    <CameraRig/>              driven by machine state, not user scroll
-    <BrainMesh/>              whole brain, stylized material
-    <PrecentralHighlight/>    emissive overlay, visible in overview
-    <HomunculusStrip/>        mounts only when focused
-      <TerritorySegment/>     one per body part, sized by corticalShare
-    <LesionMarker/>           mounts when a site is selected
-  </Suspense>
-</Canvas>
+<div>                         DOM wrapper, relative
+  <Canvas dpr={[1, 2]}>
+    <Suspense fallback={null}>
+      <Lighting/>
+      <CameraRig/>            driven by machine state, not user scroll
+      <BrainMesh/>            whole brain, stylized material
+      <PrecentralHighlight/>  emissive overlay, visible in overview
+      <HomunculusStrip/>      mounts only when focused
+        <TerritorySegment/>   one per body part, sized by corticalShare
+      <LesionMarker/>         mounts when a site is selected
+    </Suspense>
+  </Canvas>
+  <SceneLoader/>              DOM overlay beside the canvas, driven by drei useProgress
+</div>
 ```
+
+The loader is a DOM sibling of the canvas, not a Suspense fallback around it. R3F renders
+the 3D tree through its own reconciler, so a suspension from `useGLTF` inside the canvas
+is not caught by a boundary outside it, and a DOM element cannot render inside it. The
+in-canvas boundary falls back to nothing; the sibling reads load progress from drei's
+`useProgress` and shows itself while loading is active.
 
 ### The body diagram is 2D SVG, not 3D
 

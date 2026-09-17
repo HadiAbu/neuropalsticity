@@ -1110,20 +1110,29 @@ _Requirement: 2.3, 4.6, 5.3_
 Create `src/levels/motor-cortex/ui/SceneLoader.tsx`:
 
 ```tsx
+import { useProgress } from '@react-three/drei';
+
 export function SceneLoader() {
+  const { active, progress } = useProgress();
+  if (!active) return null;
+
   return (
     <div
       role="status"
+      aria-live="polite"
       aria-label="Loading the brain model"
       className="absolute inset-0 grid place-items-center text-slate-400"
     >
-      Loading the brain…
+      Loading the brain… {Math.round(progress)}%
     </div>
   );
 }
 ```
 
-This renders outside the canvas, so the page never shows a blank canvas while assets load.
+This is a DOM sibling of the canvas, **not** a Suspense fallback around it. R3F runs the 3D
+tree through its own reconciler, so a suspension from `useGLTF` inside the canvas is not
+caught by a boundary outside it — and a `<div>` cannot render inside the canvas. `useProgress`
+reads Three's default loading manager, which `useGLTF` uses, so it shows while the GLB loads.
 
 - [ ] **Step 2: Build the lighting**
 
@@ -1197,20 +1206,22 @@ import { SceneLoader } from '@levels/motor-cortex/ui/SceneLoader';
 export function BrainScene({ children }: { children?: ReactNode }) {
   return (
     <div className="relative h-full w-full">
-      <Suspense fallback={<SceneLoader />}>
-        <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 250], fov: 45 }}>
+      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 250], fov: 45 }}>
+        <Suspense fallback={null}>
           <Lighting />
           <BrainMesh />
           <OrbitControls enablePan={false} />
           {children}
-        </Canvas>
-      </Suspense>
+        </Suspense>
+      </Canvas>
+      <SceneLoader />
     </div>
   );
 }
 ```
 
-`dpr={[1, 2]}` caps retina rendering. Adjust `camera.position` to the scale recorded in the
+The `<Suspense>` sits *inside* the canvas with a `null` fallback; `<SceneLoader />` sits
+*beside* the canvas as a DOM overlay. `dpr={[1, 2]}` caps retina rendering. Adjust `camera.position` to the scale recorded in the
 Task 2 decision record.
 
 - [ ] **Step 5: Wire it into the app and check it by eye**
