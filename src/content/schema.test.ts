@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateRegionContent } from '@content/schema';
-import type { PharmacologicContent, SomatotopicContent, ThreatContent } from '@content/schema';
+import type { MemoryContent, PharmacologicContent, SomatotopicContent, ThreatContent } from '@content/schema';
 
 const minimal: SomatotopicContent = {
   kind: 'somatotopic',
@@ -53,6 +53,47 @@ const threatMinimal: ThreatContent = {
       ],
       intact: { heartRateBpm: 120, sweat: 'strong', behavior: 'freezes', report: 'terrified' },
       damaged: { heartRateBpm: 72, sweat: 'none', behavior: 'touches it', report: 'curious' },
+      explanation: 'why',
+      dayToDay: 'text',
+      sources: [{ claim: 'c', citation: 'cite' }],
+    },
+  ],
+  plasticity: {
+    mechanism: 'mechanism',
+    timeline: [
+      { week: 0, recoveryFraction: 0 },
+      { week: 4, recoveryFraction: 0.3 },
+    ],
+    caveat: 'compensation, not repair',
+  },
+  sources: [{ claim: 'c', citation: 'cite' }],
+};
+
+const memoryMinimal: MemoryContent = {
+  kind: 'memory',
+  id: 'memory-test',
+  name: 'Memory Region',
+  plainName: 'memory',
+  overview: 'overview',
+  insight: 'insight',
+  premise: 'both hippocampi damaged',
+  trials: [
+    {
+      id: 'introduction',
+      label: 'Meets the same person daily',
+      description: 'a month of sessions',
+      choices: [
+        { id: 'recognizes', label: 'Recognizes her', correct: false },
+        { id: 'stranger', label: 'Treats her as a stranger', correct: true },
+      ],
+      intact: {
+        formsNewMemory: true, retainsOldMemories: true, learnsSkillsProcedurally: true,
+        behavior: 'greets by name', report: '"Good to see you again."',
+      },
+      damaged: {
+        formsNewMemory: false, retainsOldMemories: true, learnsSkillsProcedurally: true,
+        behavior: 'introduces herself as a stranger every time', report: '"Have we met before?"',
+      },
       explanation: 'why',
       dayToDay: 'text',
       sources: [{ claim: 'c', citation: 'cite' }],
@@ -317,5 +358,43 @@ describe('validateRegionContent — pharmacologic', () => {
       substances: [drugMinimal.substances[0], { ...drugMinimal.substances[0] }],
     } satisfies PharmacologicContent;
     expect(validateRegionContent(bad)).toContain('substance ids must be unique');
+  });
+});
+
+describe('validateRegionContent — memory', () => {
+  it('accepts well-formed memory content', () => {
+    expect(validateRegionContent(memoryMinimal)).toEqual([]);
+  });
+
+  it('rejects a trial with no correct choice', () => {
+    const bad = {
+      ...memoryMinimal,
+      trials: [{ ...memoryMinimal.trials[0], choices: memoryMinimal.trials[0].choices.map((c) => ({ ...c, correct: false })) }],
+    } satisfies MemoryContent;
+    expect(validateRegionContent(bad)).toContain('trial introduction must have exactly one correct choice (got 0)');
+  });
+
+  it('rejects a trial with fewer than two choices', () => {
+    const bad = {
+      ...memoryMinimal,
+      trials: [{ ...memoryMinimal.trials[0], choices: [{ id: 'only', label: 'Only', correct: true }] }],
+    } satisfies MemoryContent;
+    expect(validateRegionContent(bad)).toContain('trial introduction must have at least two choices');
+  });
+
+  it('rejects a trial with no sources', () => {
+    const bad = {
+      ...memoryMinimal,
+      trials: [{ ...memoryMinimal.trials[0], sources: [] }],
+    } satisfies MemoryContent;
+    expect(validateRegionContent(bad)).toContain('trial introduction has no sources');
+  });
+
+  it('rejects duplicate trial ids', () => {
+    const bad = {
+      ...memoryMinimal,
+      trials: [memoryMinimal.trials[0], { ...memoryMinimal.trials[0] }],
+    } satisfies MemoryContent;
+    expect(validateRegionContent(bad)).toContain('trial ids must be unique');
   });
 });

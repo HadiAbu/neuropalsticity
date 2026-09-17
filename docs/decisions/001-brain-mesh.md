@@ -210,3 +210,8 @@ approximate sphere at `(0, -18, -6)` in the mesh frame and labels it approximate
 Added `PostcentralGyrus_R` / `PostcentralGyrus_L` (FMA72665/72666, 16,862 / 16,858 tri) —
 the primary somatosensory cortex, separable in the same way the precentral gyrus was.
 GLB is now 12 nodes, 2,924,568 bytes.
+
+## Update — hippocampus slice
+
+Added `Hippocampus_R` / `Hippocampus_L` (FMA72713/72714, 4,452 / 4,280 tri). GLB is now
+14 nodes, 2,973,624 bytes.
