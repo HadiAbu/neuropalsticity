@@ -72,7 +72,10 @@ relative paths.
 | `@levels/*` | `src/levels/*` |
 | `@lib/*` | `src/lib/*` |
 | `@components/*` | `src/components/*` |
-| `@types/*` | `src/types/*` |
+
+Shared types import from `@/types`. There is deliberately **no `@types/*` alias** — that
+name collides with TypeScript's ambient package namespace, where `@types/index` can resolve
+to `node_modules/@types` instead of our source.
 
 ## 3D Performance Notes
 
