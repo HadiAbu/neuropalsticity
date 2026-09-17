@@ -19,7 +19,7 @@ const labelOf = (part: BodyPart) => motorCortex.territories.find((t) => t.id ===
 
 export function PredictionPrompt() {
   const { state, dispatch } = useSimulation();
-  const choices = useMemo(() => (state.lesionSite ? choicesFor(state.lesionSite) : []), [state.lesionSite]);
+  const choices = useMemo(() => (state.site ? choicesFor(state.site) : []), [state.site]);
 
   if (state.phase !== 'predicting') return null;
 
@@ -30,7 +30,7 @@ export function PredictionPrompt() {
       <ul className="flex flex-col gap-2">
         {choices.map((part) => (
           <li key={part}>
-            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'SUBMIT_PREDICTION', part })}>
+            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'SUBMIT_PREDICTION', choice: part })}>
               {labelOf(part)}
             </button>
           </li>

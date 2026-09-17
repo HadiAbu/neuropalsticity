@@ -9,9 +9,9 @@ const LINK =
 
 export function DeficitPanel() {
   const { state, dispatch } = useSimulation();
-  if (state.phase !== 'revealed' || !state.lesionSite) return null;
+  if (state.phase !== 'revealed' || !state.site) return null;
 
-  const result = resolveDeficit(state.lesionSite, motorCortex, state.hemisphere);
+  const result = resolveDeficit(state.site, motorCortex, state.hemisphere);
   const scenario = motorCortex.scenarios.find((s) => s.id === result.scenarioId)!;
 
   const predicted = state.prediction;

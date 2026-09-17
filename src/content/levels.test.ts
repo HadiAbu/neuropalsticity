@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { levels } from '@content/levels';
 import { FLOW_STEPS } from '@content/flow';
-import type { Phase } from '@levels/motor-cortex/simulation/machine';
+import type { Phase } from '@lib/simulation/machine';
 
 describe('level registry', () => {
   it('has unique ids', () => {
@@ -23,7 +23,7 @@ describe('level registry', () => {
 
 describe('flow steps', () => {
   it('covers every simulation phase exactly once, in order', () => {
-    const phases: Phase[] = ['overview', 'stripFocused', 'predicting', 'revealed', 'rehab'];
+    const phases: Phase[] = ['overview', 'focused', 'predicting', 'revealed', 'rehab'];
     expect(FLOW_STEPS.map((s) => s.phase)).toEqual(phases);
   });
 });

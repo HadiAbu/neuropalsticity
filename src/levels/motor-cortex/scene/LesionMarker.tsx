@@ -8,8 +8,8 @@ export function LesionMarker() {
   const { state } = useSimulation();
 
   const offset = useMemo(
-    () => (state.lesionSite ? segmentCenter(motorCortex, state.lesionSite) : null),
-    [state.lesionSite]
+    () => (state.site ? segmentCenter(motorCortex, state.site) : null),
+    [state.site]
   );
 
   if (offset === null) return null;

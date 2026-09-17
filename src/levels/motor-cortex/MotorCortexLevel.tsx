@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { flowCopy } from '@content/flow';
 import motorCortex from '@content/regions/motor-cortex';
 import type { BodyPart } from '@content/schema';
-import { BrainScene } from '@levels/motor-cortex/scene/BrainScene';
-import { CameraRig } from '@levels/motor-cortex/scene/CameraRig';
+import { BrainScene } from '@lib/scene/BrainScene';
+import { CameraRig, type Framing } from '@lib/scene/CameraRig';
+import type { Phase } from '@lib/simulation/machine';
+import { ProgressRail } from '@lib/ui/ProgressRail';
+import { BrainMesh } from '@levels/motor-cortex/scene/BrainMesh';
 import { HomunculusStrip } from '@levels/motor-cortex/scene/HomunculusStrip';
 import { LesionMarker } from '@levels/motor-cortex/scene/LesionMarker';
 import { applyRecovery, recoveryAt } from '@levels/motor-cortex/simulation/recovery';
@@ -11,21 +15,27 @@ import { BodyDiagram } from '@levels/motor-cortex/ui/BodyDiagram';
 import { DeficitPanel } from '@levels/motor-cortex/ui/DeficitPanel';
 import { InsightPanel } from '@levels/motor-cortex/ui/InsightPanel';
 import { PredictionPrompt } from '@levels/motor-cortex/ui/PredictionPrompt';
-import { ProgressRail } from '@levels/motor-cortex/ui/ProgressRail';
 import { RehabTimeline } from '@levels/motor-cortex/ui/RehabTimeline';
 import { SiteChooser } from '@levels/motor-cortex/ui/SiteChooser';
 import { useSimulation } from '@levels/motor-cortex/useSimulation';
-import { flowCopy } from '@content/flow';
 
 const BUTTON =
   'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
+
+const FOCUSED: Framing = { position: [80, 50, 215], target: [45, 15, 0] };
+const FRAMING: Partial<Record<Phase, Framing>> = {
+  focused: FOCUSED,
+  predicting: FOCUSED,
+  revealed: FOCUSED,
+  rehab: FOCUSED,
+};
 
 export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
   const { state, dispatch } = useSimulation();
   const [hoveredPart, setHoveredPart] = useState<BodyPart | null>(null);
 
-  const showDeficits = (state.phase === 'revealed' || state.phase === 'rehab') && state.lesionSite !== null;
-  const result = showDeficits ? resolveDeficit(state.lesionSite!, motorCortex, state.hemisphere) : null;
+  const showDeficits = (state.phase === 'revealed' || state.phase === 'rehab') && state.site !== null;
+  const result = showDeficits ? resolveDeficit(state.site!, motorCortex, state.hemisphere) : null;
   const entries = result
     ? state.phase === 'rehab'
       ? applyRecovery(result.entries, recoveryAt(motorCortex, state.rehabWeek))
@@ -34,10 +44,14 @@ export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
 
   const hoveredLabel = hoveredPart ? motorCortex.territories.find((t) => t.id === hoveredPart)?.label : null;
 
+  const jumpTo = (phase: Phase) =>
+    dispatch(phase === 'overview' ? { type: 'RETURN_TO_OVERVIEW' } : { type: 'RESET_SCENARIO' });
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-slate-900 text-slate-100">
-      <BrainScene>
-        <CameraRig />
+      <BrainScene orbitEnabled={state.phase === 'overview'}>
+        <BrainMesh />
+        <CameraRig phase={state.phase} framing={FRAMING} />
         <HomunculusStrip onHover={setHoveredPart} />
         <LesionMarker />
       </BrainScene>
@@ -49,11 +63,11 @@ export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
           </button>
           <h1 className="text-xl font-semibold">{motorCortex.name}</h1>
         </div>
-        <ProgressRail />
+        <ProgressRail phase={state.phase} onJump={jumpTo} />
         {state.phase === 'overview' ? (
           <div className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
             <p className="mb-3 text-sm leading-relaxed text-slate-300">{motorCortex.overview}</p>
-            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'FOCUS_STRIP' })}>
+            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'FOCUS' })}>
               Focus the motor strip
             </button>
           </div>
@@ -66,7 +80,7 @@ export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
 
       {state.phase !== 'overview' && (
         <aside className="absolute bottom-4 right-4 top-4 flex w-96 flex-col gap-4 overflow-y-auto">
-          {state.phase === 'stripFocused' && <InsightPanel />}
+          {state.phase === 'focused' && <InsightPanel />}
           <SiteChooser onHover={setHoveredPart} />
           <PredictionPrompt />
           <DeficitPanel />

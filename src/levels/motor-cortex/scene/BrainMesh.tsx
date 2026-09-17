@@ -50,7 +50,7 @@ export function BrainMesh() {
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (state.phase !== 'overview' || !isGyrus(e.object.name)) return;
     e.stopPropagation();
-    dispatch({ type: 'FOCUS_STRIP' });
+    dispatch({ type: 'FOCUS' });
   };
 
   return (
