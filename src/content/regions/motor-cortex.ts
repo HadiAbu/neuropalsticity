@@ -1,6 +1,7 @@
-import type { RegionContent } from '@content/schema';
+import type { SomatotopicContent } from '@content/schema';
 
-const motorCortex: RegionContent = {
+const motorCortex: SomatotopicContent = {
+  kind: 'somatotopic',
   id: 'motor-cortex',
   name: 'Primary motor cortex (precentral gyrus)',
   plainName: 'the motor cortex',
