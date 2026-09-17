@@ -11,14 +11,16 @@ import { BodyDiagram } from '@levels/motor-cortex/ui/BodyDiagram';
 import { DeficitPanel } from '@levels/motor-cortex/ui/DeficitPanel';
 import { InsightPanel } from '@levels/motor-cortex/ui/InsightPanel';
 import { PredictionPrompt } from '@levels/motor-cortex/ui/PredictionPrompt';
+import { ProgressRail } from '@levels/motor-cortex/ui/ProgressRail';
 import { RehabTimeline } from '@levels/motor-cortex/ui/RehabTimeline';
 import { SiteChooser } from '@levels/motor-cortex/ui/SiteChooser';
 import { useSimulation } from '@levels/motor-cortex/useSimulation';
+import { flowCopy } from '@content/flow';
 
 const BUTTON =
   'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
-export function MotorCortexLevel() {
+export function MotorCortexLevel({ onExit }: { onExit: () => void }) {
   const { state, dispatch } = useSimulation();
   const [hoveredPart, setHoveredPart] = useState<BodyPart | null>(null);
 
@@ -41,7 +43,13 @@ export function MotorCortexLevel() {
       </BrainScene>
 
       <header className="absolute left-4 top-4 flex max-w-sm flex-col gap-3">
-        <h1 className="text-xl font-semibold">{motorCortex.name}</h1>
+        <div className="flex items-center gap-3">
+          <button type="button" className={BUTTON} onClick={onExit}>
+            ← {flowCopy.exit}
+          </button>
+          <h1 className="text-xl font-semibold">{motorCortex.name}</h1>
+        </div>
+        <ProgressRail />
         {state.phase === 'overview' ? (
           <div className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
             <p className="mb-3 text-sm leading-relaxed text-slate-300">{motorCortex.overview}</p>
