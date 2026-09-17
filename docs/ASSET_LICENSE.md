@@ -1,0 +1,62 @@
+# Asset license: public/models/brain.glb
+
+## Model
+
+- **Name / structures included:** White matter of cerebral hemisphere
+  (`FMA61822`), cerebellum (`FMA67944`), right precentral gyrus
+  (`FMA72661`), left precentral gyrus (`FMA72662`) — four parts from the
+  BodyParts3D anatomical model, combined into one glTF binary (`.glb`).
+- **Author / publisher:** The Database Center for Life Science (DBCLS),
+  Research Organization of Information and Systems (ROIS), Japan —
+  original creator of **BodyParts3D / Anatomography**.
+- **Source URL (data):**
+  `http://lifesciencedb.jp/bp3d/?lng=en` (official BodyParts3D site).
+- **Source URL (files actually downloaded for this project):**
+  `https://github.com/Kevin-Mattheus-Moerman/BodyParts3D` — a third-party
+  mirror that re-packages the official BodyParts3D release as binary STL
+  files, one per FMA anatomical ID, under the same license as the
+  original (see that repo's `LICENSE_content` / `README_e.html`, which
+  reproduce DBCLS's original license text verbatim).
+- **License name:** Creative Commons Attribution-Share Alike 2.1 Japan
+  (CC BY-SA 2.1 JP).
+- **License URL:**
+  `https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en_US`
+
+## Required attribution string
+
+Per the BodyParts3D README, this exact string must be used when
+attributing the database:
+
+> BodyParts3D, Copyright© The Database Center for Life Science licensed by
+> CC Attribution-Share Alike 2.1 Japan.
+
+This project uses that attribution string verbatim wherever the asset is
+credited (e.g. an in-app "About / Credits" screen, added in a later task).
+
+## Share-alike obligation for this repository
+
+CC BY-SA 2.1 JP requires that **any derivative work based on part or whole
+of the database data** be distributed under the same license
+(BY-SA 2.1 JP). Concretely, for this repository:
+
+- `public/models/brain.glb` — being a direct derivative (recombined,
+  reoriented, and Draco-compressed subset of BodyParts3D geometry) — must
+  remain available under CC BY-SA 2.1 JP if this repository or the built
+  app is distributed/published. Anyone redistributing this specific asset
+  (or a modified version of it) must also license it CC BY-SA 2.1 JP and
+  carry forward the attribution string above.
+- This obligation attaches to **the 3D asset file itself**, not to the
+  application's own source code (React/TypeScript/build tooling), which
+  remains under whatever license this repository otherwise uses. Only the
+  mesh derivative is in scope of the share-alike clause.
+- If this asset is ever modified further (e.g. re-decimated, re-textured,
+  additional BodyParts3D structures merged in), the derivative remains
+  under CC BY-SA 2.1 JP with the same attribution requirement.
+
+## Conversion performed
+
+The committed `.glb` is a derivative work: the original STL parts were
+merged into one scene, recentered, reoriented (Z-up → Y-up), and
+Draco-compressed. No geometry was added, redesigned, or artistically
+altered — only combined, repositioned, and compressed. See
+`docs/decisions/001-brain-mesh.md` for full technical/reproduction detail.

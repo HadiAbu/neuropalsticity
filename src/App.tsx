@@ -1,5 +1,10 @@
-function App() {
-  return <main className="h-screen w-screen" />
-}
+import { MotorCortexLevel } from '@levels/motor-cortex/MotorCortexLevel';
+import { SimulationProvider } from '@levels/motor-cortex/useSimulation';
 
-export default App
+export default function App() {
+  return (
+    <SimulationProvider>
+      <MotorCortexLevel />
+    </SimulationProvider>
+  );
+}
