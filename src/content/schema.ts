@@ -129,6 +129,27 @@ export interface MemoryMechanic {
 }
 
 // ---------------------------------------------------------------------------
+// Coordination mechanic (cerebellum)
+// ---------------------------------------------------------------------------
+
+export interface CoordinationProfile {
+  gait: 'steady' | 'wide-based and unsteady';
+  intentionTremor: boolean;
+  rapidAlternatingMovements: 'normal' | 'irregular';
+  speechQuality: 'normal' | 'scanning';
+  behavior: string;
+  report: string;
+}
+
+export type CoordinationTrial = ScenarioTrial<CoordinationProfile>;
+
+export interface CoordinationMechanic {
+  kind: 'coordination';
+  premise: string;
+  trials: CoordinationTrial[];
+}
+
+// ---------------------------------------------------------------------------
 // Pharmacologic mechanic (drugs & the brain)
 // ---------------------------------------------------------------------------
 
@@ -184,7 +205,13 @@ export type SomatotopicContent = RegionBase & SomatotopicMechanic;
 export type ThreatContent = RegionBase & ThreatMechanic;
 export type PharmacologicContent = RegionBase & PharmacologicMechanic;
 export type MemoryContent = RegionBase & MemoryMechanic;
-export type RegionContent = SomatotopicContent | ThreatContent | PharmacologicContent | MemoryContent;
+export type CoordinationContent = RegionBase & CoordinationMechanic;
+export type RegionContent =
+  | SomatotopicContent
+  | ThreatContent
+  | PharmacologicContent
+  | MemoryContent
+  | CoordinationContent;
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -352,6 +379,15 @@ function validateMemory(content: MemoryContent): string[] {
   });
 }
 
+function validateCoordination(content: CoordinationContent): string[] {
+  return validateScenarioTrials('trial', content.trials, (_label, trial) => {
+    const problems: string[] = [];
+    if (!trial.intact) problems.push(`trial ${trial.id} is missing an intact profile`);
+    if (!trial.damaged) problems.push(`trial ${trial.id} is missing a damaged profile`);
+    return problems;
+  });
+}
+
 export function validateRegionContent(content: RegionContent): string[] {
   const problems = validateBase(content);
   switch (content.kind) {
@@ -366,6 +402,9 @@ export function validateRegionContent(content: RegionContent): string[] {
       break;
     case 'memory':
       problems.push(...validateMemory(content));
+      break;
+    case 'coordination':
+      problems.push(...validateCoordination(content));
       break;
   }
   return problems;
