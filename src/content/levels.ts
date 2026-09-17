@@ -47,7 +47,7 @@ export const levels: LevelEntry[] = [
     anatomy: { nodePrefixes: ['Hippocampus'] } },
   { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'available',
     anatomy: { nodePrefixes: ['Amygdala'] } },
-  { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'coming-soon',
+  { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'available',
     anatomy: { nodePrefixes: ['Cerebellum'] } },
   { id: 'basal-ganglia', name: 'Basal ganglia', plainName: 'Habit & initiation', theme: 'regions', status: 'coming-soon',
     anatomy: { marker: [-22, -8, 8] } },

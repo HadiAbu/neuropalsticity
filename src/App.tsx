@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { LevelHub } from '@/hub/LevelHub';
 import { AmygdalaLevel } from '@levels/amygdala/AmygdalaLevel';
 import { SimulationProvider as AmygdalaSimulation } from '@levels/amygdala/useSimulation';
+import { CerebellumLevel } from '@levels/cerebellum/CerebellumLevel';
+import { SimulationProvider as CerebellumSimulation } from '@levels/cerebellum/useSimulation';
 import { DrugsLevel } from '@levels/drugs/DrugsLevel';
 import { SimulationProvider as DrugsSimulation } from '@levels/drugs/useSimulation';
 import { HippocampusLevel } from '@levels/hippocampus/HippocampusLevel';
@@ -45,6 +47,12 @@ export default function App() {
         <HippocampusSimulation key={levelId}>
           <HippocampusLevel onExit={exit} />
         </HippocampusSimulation>
+      );
+    case 'cerebellum':
+      return (
+        <CerebellumSimulation key={levelId}>
+          <CerebellumLevel onExit={exit} />
+        </CerebellumSimulation>
       );
     default:
       return <LevelHub onEnter={setLevelId} />;
