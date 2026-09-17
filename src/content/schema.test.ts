@@ -87,4 +87,54 @@ describe('validateRegionContent', () => {
     } satisfies RegionContent;
     expect(validateRegionContent(bad)).toContain('plasticity timeline must start at week 0');
   });
+
+  it('rejects a corticalShare outside 0..1', () => {
+    const bad = {
+      ...minimal,
+      territories: [
+        { id: 'hand', label: 'Hand', corticalShare: 1.6, order: 0 },
+        { id: 'leg', label: 'Leg', corticalShare: -0.6, order: 1 },
+      ],
+    } satisfies RegionContent;
+    expect(validateRegionContent(bad)).toContain(
+      'territory "hand" corticalShare must be between 0 and 1 (got 1.6)'
+    );
+  });
+
+  it('rejects duplicate territory ids', () => {
+    const bad = {
+      ...minimal,
+      territories: [
+        { id: 'hand', label: 'Hand', corticalShare: 0.5, order: 0 },
+        { id: 'hand', label: 'Hand', corticalShare: 0.5, order: 1 },
+      ],
+    } satisfies RegionContent;
+    expect(validateRegionContent(bad)).toContain('territory ids must be unique');
+  });
+
+  it('rejects a recoveryFraction outside 0..1', () => {
+    const bad = {
+      ...minimal,
+      plasticity: {
+        ...minimal.plasticity,
+        timeline: [
+          { week: 0, recoveryFraction: 0 },
+          { week: 4, recoveryFraction: 30 },
+        ],
+      },
+    } satisfies RegionContent;
+    expect(validateRegionContent(bad)).toContain(
+      'plasticity recoveryFraction must be between 0 and 1 (got 30 at week 4)'
+    );
+  });
+
+  it('rejects a deficit in an undeclared part', () => {
+    const bad = {
+      ...minimal,
+      scenarios: [{ ...minimal.scenarios[0], deficits: [{ part: 'tongue' as const, severity: 'complete' }] }],
+    } satisfies RegionContent;
+    expect(validateRegionContent(bad)).toContain(
+      'scenario s1 describes a deficit in "tongue" which is not declared'
+    );
+  });
 });

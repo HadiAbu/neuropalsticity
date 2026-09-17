@@ -53,11 +53,24 @@ const SHARE_TOLERANCE = 1e-6;
 
 export function validateRegionContent(content: RegionContent): string[] {
   const problems: string[] = [];
-  const declared = new Set(content.territories.map((t) => t.id));
+  const ids = content.territories.map((t) => t.id);
+  const declared = new Set(ids);
+
+  if (new Set(ids).size !== ids.length) {
+    problems.push('territory ids must be unique');
+  }
 
   const shareSum = content.territories.reduce((sum, t) => sum + t.corticalShare, 0);
   if (Math.abs(shareSum - 1) > SHARE_TOLERANCE) {
     problems.push(`territory corticalShare values must sum to 1 (got ${shareSum})`);
+  }
+
+  for (const t of content.territories) {
+    if (t.corticalShare < 0 || t.corticalShare > 1) {
+      problems.push(
+        `territory "${t.id}" corticalShare must be between 0 and 1 (got ${t.corticalShare})`
+      );
+    }
   }
 
   const orders = content.territories.map((t) => t.order);
@@ -91,6 +104,14 @@ export function validateRegionContent(content: RegionContent): string[] {
     if (timeline[i].week <= timeline[i - 1].week) {
       problems.push('plasticity timeline weeks must strictly increase');
       break;
+    }
+  }
+
+  for (const p of timeline) {
+    if (p.recoveryFraction < 0 || p.recoveryFraction > 1) {
+      problems.push(
+        `plasticity recoveryFraction must be between 0 and 1 (got ${p.recoveryFraction} at week ${p.week})`
+      );
     }
   }
 
