@@ -56,10 +56,19 @@ the risk. Do not proceed past Task 2 without a resolved asset decision.
 
 - [ ] **Step 1: Scaffold Vite + React + TS**
 
+The repo root already contains `.kiro/`, `.claude/`, and `.gitignore`, so scaffolding
+directly into `.` would trigger an interactive "directory not empty" prompt. Scaffold into a
+scratch directory and move the generated files in:
+
 ```bash
-npm create vite@latest . -- --template react-ts
+npm create vite@latest scaffold-tmp -- --template react-ts
+cp -rn scaffold-tmp/. .
+rm -rf scaffold-tmp
 npm install
 ```
+
+`cp -rn` never overwrites — the existing `.gitignore` is kept. Delete the generated
+`src/App.css` and `src/assets/` boilerplate; nothing in this plan uses them.
 
 - [ ] **Step 2: Install runtime and dev dependencies**
 
@@ -75,7 +84,7 @@ Install current stable versions. Do not pin guessed version numbers.
 Replace `vite.config.ts`:
 
 ```ts
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath, URL } from 'node:url';
@@ -123,13 +132,22 @@ package namespace, so an alias by that name invites `@types/index` resolving to
 Confirm `"strict": true` is present. Add `"noImplicitAny": true` and
 `"strictNullChecks": true` explicitly.
 
-- [ ] **Step 5: Add the `test` script**
+- [ ] **Step 5: Add the `test` script and the Tailwind entry**
 
 In `package.json` `"scripts"`, add:
 
 ```json
 "test": "vitest run"
 ```
+
+Replace the entire contents of `src/index.css` with:
+
+```css
+@import "tailwindcss";
+```
+
+Without this import no Tailwind class anywhere in the app takes effect. `src/main.tsx`
+already imports `./index.css` from the scaffold — leave that in place.
 
 - [ ] **Step 6: Write a failing smoke test**
 
@@ -1542,6 +1560,7 @@ Create `src/levels/motor-cortex/simulation/stripLayout.ts`:
 import type { BodyPart, RegionContent, Territory } from '@content/schema';
 
 export const STRIP_LENGTH = 120;
+export const STRIP_ORIGIN_Y = -STRIP_LENGTH / 2 + 40;
 
 export interface StripSegment {
   territory: Territory;
@@ -1629,7 +1648,7 @@ Create `src/levels/motor-cortex/scene/HomunculusStrip.tsx`:
 import { useMemo } from 'react';
 import motorCortex from '@content/regions/motor-cortex';
 import { selectableSites } from '@levels/motor-cortex/simulation/resolveDeficit';
-import { STRIP_LENGTH, stripLayout } from '@levels/motor-cortex/simulation/stripLayout';
+import { STRIP_ORIGIN_Y, stripLayout } from '@levels/motor-cortex/simulation/stripLayout';
 import { TerritorySegment } from '@levels/motor-cortex/scene/TerritorySegment';
 import { useSimulation } from '@levels/motor-cortex/useSimulation';
 import type { BodyPart } from '@content/schema';
@@ -1646,7 +1665,7 @@ export function HomunculusStrip({
   if (state.phase === 'overview') return null;
 
   return (
-    <group position={[0, -STRIP_LENGTH / 2 + 40, 0]}>
+    <group position={[0, STRIP_ORIGIN_Y, 0]}>
       {segments.map(({ territory, offset, length }) => (
         <TerritorySegment
           key={territory.id}
@@ -1853,7 +1872,7 @@ Create `src/levels/motor-cortex/scene/LesionMarker.tsx`:
 ```tsx
 import { useMemo } from 'react';
 import motorCortex from '@content/regions/motor-cortex';
-import { STRIP_LENGTH, segmentCenter } from '@levels/motor-cortex/simulation/stripLayout';
+import { STRIP_ORIGIN_Y, segmentCenter } from '@levels/motor-cortex/simulation/stripLayout';
 import { useSimulation } from '@levels/motor-cortex/useSimulation';
 
 export function LesionMarker() {
@@ -1867,7 +1886,7 @@ export function LesionMarker() {
   if (offset === null) return null;
 
   return (
-    <group position={[0, -STRIP_LENGTH / 2 + 40, 0]}>
+    <group position={[0, STRIP_ORIGIN_Y, 0]}>
       <mesh position={[0, offset, 8]}>
         <sphereGeometry args={[7, 24, 24]} />
         <meshStandardMaterial color="#7f1d1d" emissive="#dc2626" emissiveIntensity={0.6} />
