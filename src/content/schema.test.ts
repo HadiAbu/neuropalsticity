@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateRegionContent } from '@content/schema';
-import type { SomatotopicContent, ThreatContent } from '@content/schema';
+import type { PharmacologicContent, SomatotopicContent, ThreatContent } from '@content/schema';
 
 const minimal: SomatotopicContent = {
   kind: 'somatotopic',
@@ -222,5 +222,100 @@ describe('validateRegionContent — threat', () => {
       stimuli: [threatMinimal.stimuli[0], { ...threatMinimal.stimuli[0] }],
     } satisfies ThreatContent;
     expect(validateRegionContent(bad)).toContain('stimulus ids must be unique');
+  });
+});
+
+const drugMinimal: PharmacologicContent = {
+  kind: 'pharmacologic',
+  id: 'drug-test',
+  name: 'Drugs',
+  plainName: 'chemistry',
+  overview: 'overview',
+  insight: 'insight',
+  pathway: 'reward pathway',
+  substances: [
+    {
+      id: 'cocaine',
+      label: 'Cocaine',
+      drugClass: 'stimulant',
+      scenario: 'a line',
+      transmitter: 'dopamine',
+      action: 'blocks-reuptake',
+      synapse: {
+        baseline: { transmitterInCleft: 0.3, receptorActivation: 0.3, receptorDensity: 1 },
+        acute: { transmitterInCleft: 0.9, receptorActivation: 0.9, receptorDensity: 1 },
+        tolerant: { transmitterInCleft: 0.9, receptorActivation: 0.5, receptorDensity: 0.6 },
+      },
+      choices: [
+        { id: 'a', label: 'Euphoric', correct: true },
+        { id: 'b', label: 'Sleepy', correct: false },
+      ],
+      sober: { heartRateBpm: 70, reactionTimeMs: 250, mood: 'steady', behavior: 'normal', report: 'fine' },
+      acute: { heartRateBpm: 120, reactionTimeMs: 210, mood: 'euphoric', behavior: 'restless', report: 'amazing' },
+      explanation: 'why',
+      adaptation: 'how it adapts',
+      dayToDay: 'text',
+      sources: [{ claim: 'c', citation: 'cite' }],
+    },
+  ],
+  plasticity: {
+    mechanism: 'mechanism',
+    timeline: [
+      { week: 0, recoveryFraction: 0 },
+      { week: 4, recoveryFraction: 0.3 },
+    ],
+    caveat: 'partial',
+  },
+  sources: [{ claim: 'c', citation: 'cite' }],
+};
+
+describe('validateRegionContent — pharmacologic', () => {
+  it('accepts well-formed pharmacologic content', () => {
+    expect(validateRegionContent(drugMinimal)).toEqual([]);
+  });
+
+  it('rejects a substance with no correct choice', () => {
+    const bad = {
+      ...drugMinimal,
+      substances: [{ ...drugMinimal.substances[0], choices: drugMinimal.substances[0].choices.map((c) => ({ ...c, correct: false })) }],
+    } satisfies PharmacologicContent;
+    expect(validateRegionContent(bad)).toContain('substance cocaine must have exactly one correct choice (got 0)');
+  });
+
+  it('rejects a synapse value outside 0..1', () => {
+    const bad = {
+      ...drugMinimal,
+      substances: [{
+        ...drugMinimal.substances[0],
+        synapse: { ...drugMinimal.substances[0].synapse, acute: { transmitterInCleft: 1.4, receptorActivation: 0.9, receptorDensity: 1 } },
+      }],
+    } satisfies PharmacologicContent;
+    expect(validateRegionContent(bad)).toContain(
+      'substance cocaine synapse.acute.transmitterInCleft must be between 0 and 1 (got 1.4)'
+    );
+  });
+
+  it('rejects an implausible acute heart rate', () => {
+    const bad = {
+      ...drugMinimal,
+      substances: [{ ...drugMinimal.substances[0], acute: { ...drugMinimal.substances[0].acute, heartRateBpm: 260 } }],
+    } satisfies PharmacologicContent;
+    expect(validateRegionContent(bad)).toContain('substance cocaine acute heartRateBpm must be between 30 and 220 (got 260)');
+  });
+
+  it('rejects a substance with no sources', () => {
+    const bad = {
+      ...drugMinimal,
+      substances: [{ ...drugMinimal.substances[0], sources: [] }],
+    } satisfies PharmacologicContent;
+    expect(validateRegionContent(bad)).toContain('substance cocaine has no sources');
+  });
+
+  it('rejects duplicate substance ids', () => {
+    const bad = {
+      ...drugMinimal,
+      substances: [drugMinimal.substances[0], { ...drugMinimal.substances[0] }],
+    } satisfies PharmacologicContent;
+    expect(validateRegionContent(bad)).toContain('substance ids must be unique');
   });
 });

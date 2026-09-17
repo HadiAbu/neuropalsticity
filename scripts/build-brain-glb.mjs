@@ -31,6 +31,10 @@ const PARTS = [
   { fma: 'FMA72662', node: 'PrecentralGyrus_L' },
   { fma: 'FMA72832', node: 'Amygdala_R' },
   { fma: 'FMA72833', node: 'Amygdala_L' },
+  { fma: 'FMA72826', node: 'Caudate_R' },
+  { fma: 'FMA72827', node: 'Caudate_L' },
+  { fma: 'FMA72828', node: 'Putamen_R' },
+  { fma: 'FMA72829', node: 'Putamen_L' },
 ];
 
 // GLTFExporter reaches for browser FileReader when producing binary output.
