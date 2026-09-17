@@ -17,6 +17,7 @@ src/
 │       ├── scene/          # R3F scene components
 │       ├── simulation/     # reducer, state machine, deficit resolution
 │       └── ui/             # level-specific 2D overlay components
+├── hub/                    # level-select screen, driven by content/levels.ts
 ├── lib/                    # shared 3D helpers — model loading, highlighting, camera
 ├── components/             # shared 2D UI primitives
 └── types/                  # shared TypeScript types
