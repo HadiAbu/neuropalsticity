@@ -204,3 +204,9 @@ otherwise; GLB is 2,343,936 bytes.
 Added the striatum (`Caudate_L/R`, `Putamen_L/R`; FMA72826–72829) for the reward-pathway
 glow. BodyParts3D has no nucleus accumbens or VTA part; the level marks the VTA with an
 approximate sphere at `(0, -18, -6)` in the mesh frame and labels it approximate in the UI.
+
+## Update — somatosensory slice
+
+Added `PostcentralGyrus_R` / `PostcentralGyrus_L` (FMA72665/72666, 16,862 / 16,858 tri) —
+the primary somatosensory cortex, separable in the same way the precentral gyrus was.
+GLB is now 12 nodes, 2,924,568 bytes.

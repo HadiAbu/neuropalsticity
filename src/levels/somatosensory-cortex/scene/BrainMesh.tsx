@@ -8,8 +8,8 @@ import { useSimulation } from '@lib/somatotopic/useSimulation';
 const MODEL_URL = '/models/brain.glb';
 const DRACO_PATH = '/draco/';
 
-const isGyrus = (name: string) => name.startsWith('PrecentralGyrus');
-const gyrusFor = (h: Hemisphere) => (h === 'left' ? 'PrecentralGyrus_L' : 'PrecentralGyrus_R');
+const isGyrus = (name: string) => name.startsWith('PostcentralGyrus');
+const gyrusFor = (h: Hemisphere) => (h === 'left' ? 'PostcentralGyrus_L' : 'PostcentralGyrus_R');
 
 export function BrainMesh() {
   const { scene } = useGLTF(MODEL_URL, DRACO_PATH);
@@ -20,13 +20,13 @@ export function BrainMesh() {
     () => ({
       cortex: new THREE.MeshStandardMaterial({ color: '#d9a8b4', roughness: 0.85, metalness: 0 }),
       gyrusIdle: new THREE.MeshStandardMaterial({
-        color: '#7dd3fc', emissive: '#0369a1', emissiveIntensity: 0.3, roughness: 0.5,
+        color: '#86efac', emissive: '#15803d', emissiveIntensity: 0.3, roughness: 0.5,
       }),
       gyrusActive: new THREE.MeshStandardMaterial({
-        color: '#38bdf8', emissive: '#0ea5e9', emissiveIntensity: 0.8, roughness: 0.5,
+        color: '#4ade80', emissive: '#16a34a', emissiveIntensity: 0.8, roughness: 0.5,
       }),
       gyrusHover: new THREE.MeshStandardMaterial({
-        color: '#6ee7ff', emissive: '#0ea5e9', emissiveIntensity: 1.2, roughness: 0.5,
+        color: '#bbf7d0', emissive: '#16a34a', emissiveIntensity: 1.2, roughness: 0.5,
       }),
     }),
     []

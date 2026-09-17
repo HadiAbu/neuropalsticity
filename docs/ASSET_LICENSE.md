@@ -83,3 +83,12 @@ Four further BodyParts3D parts, same license and attribution:
 | FMA72827 | left caudate nucleus | `Caudate_L` |
 | FMA72828 | right putamen | `Putamen_R` |
 | FMA72829 | left putamen | `Putamen_L` |
+
+## Update — somatosensory slice
+
+Two further BodyParts3D parts, same license and attribution:
+
+| FMA ID | Part | glTF node |
+|---|---|---|
+| FMA72665 | right postcentral gyrus | `PostcentralGyrus_R` |
+| FMA72666 | left postcentral gyrus | `PostcentralGyrus_L` |

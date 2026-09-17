@@ -1,31 +1,34 @@
 import { useMemo } from 'react';
-import motorCortex from '@content/regions/motor-cortex';
-import type { BodyPart } from '@content/schema';
-import { useSimulation } from '@levels/motor-cortex/useSimulation';
+import type { BodyPart, SomatotopicContent } from '@content/schema';
+import { useSimulation } from '@lib/somatotopic/useSimulation';
 
 const BUTTON =
   'w-full rounded-md bg-slate-700 px-4 py-2 text-left hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
-/** The true worst-affected part plus three plausible decoys, alphabetical so the answer never sits first. */
-function choicesFor(site: BodyPart): BodyPart[] {
-  const scenario = motorCortex.scenarios.find((s) => s.siteTerritory === site);
+/** The true worst-affected part plus up to three plausible decoys, alphabetical so the answer never sits first. */
+function choicesFor(content: SomatotopicContent, site: BodyPart): BodyPart[] {
+  const scenario = content.scenarios.find((s) => s.siteTerritory === site);
   if (!scenario) return [];
   const worst = scenario.deficits.find((d) => d.severity === 'complete')?.part ?? site;
   const decoys = scenario.deficits.filter((d) => d.severity === 'spared').slice(0, 3).map((d) => d.part);
   return [worst, ...decoys].sort();
 }
 
-const labelOf = (part: BodyPart) => motorCortex.territories.find((t) => t.id === part)?.label ?? part;
+interface Props {
+  content: SomatotopicContent;
+  prompt: string;
+}
 
-export function PredictionPrompt() {
+export function PredictionPrompt({ content, prompt }: Props) {
   const { state, dispatch } = useSimulation();
-  const choices = useMemo(() => (state.site ? choicesFor(state.site) : []), [state.site]);
+  const choices = useMemo(() => (state.site ? choicesFor(content, state.site) : []), [content, state.site]);
+  const labelOf = (part: BodyPart) => content.territories.find((t) => t.id === part)?.label ?? part;
 
   if (state.phase !== 'predicting') return null;
 
   return (
     <section className="rounded-lg bg-slate-800/95 p-5 text-slate-100 shadow-lg">
-      <h2 className="mb-1 text-lg font-semibold">Before you look — what stops working?</h2>
+      <h2 className="mb-1 text-lg font-semibold">{prompt}</h2>
       <p className="mb-4 text-sm text-slate-300">Commit to a guess. Getting it wrong is the interesting outcome.</p>
       <ul className="flex flex-col gap-2">
         {choices.map((part) => (

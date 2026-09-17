@@ -1,20 +1,20 @@
 import { useMemo } from 'react';
-import motorCortex from '@content/regions/motor-cortex';
-import { recoveryAt } from '@levels/motor-cortex/simulation/recovery';
-import { STRIP_ORIGIN_X, STRIP_ORIGIN_Y, segmentCenter } from '@levels/motor-cortex/simulation/stripLayout';
-import { useSimulation } from '@levels/motor-cortex/useSimulation';
+import type { SomatotopicContent } from '@content/schema';
+import { recoveryAt } from '@lib/simulation/recovery';
+import { STRIP_ORIGIN_X, STRIP_ORIGIN_Y, segmentCenter } from '@lib/somatotopic/simulation/stripLayout';
+import { useSimulation } from '@lib/somatotopic/useSimulation';
 
-export function LesionMarker() {
+export function LesionMarker({ content }: { content: SomatotopicContent }) {
   const { state } = useSimulation();
 
   const offset = useMemo(
-    () => (state.site ? segmentCenter(motorCortex, state.site) : null),
-    [state.site]
+    () => (state.site ? segmentCenter(content, state.site) : null),
+    [content, state.site]
   );
 
   if (offset === null) return null;
 
-  const haloRadius = 7 + recoveryAt(motorCortex, state.rehabWeek) * 10;
+  const haloRadius = 7 + recoveryAt(content, state.rehabWeek) * 10;
 
   return (
     <group position={[STRIP_ORIGIN_X, STRIP_ORIGIN_Y, 0]}>
