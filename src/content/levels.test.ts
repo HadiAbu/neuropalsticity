@@ -9,8 +9,8 @@ describe('level registry', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('offers exactly the motor cortex as available today', () => {
-    expect(levels.filter((l) => l.status === 'available').map((l) => l.id)).toEqual(['motor-cortex']);
+  it('offers exactly the motor cortex and amygdala as available today', () => {
+    expect(levels.filter((l) => l.status === 'available').map((l) => l.id)).toEqual(['motor-cortex', 'amygdala']);
   });
 
   it('names every level in both clinical and plain terms', () => {
