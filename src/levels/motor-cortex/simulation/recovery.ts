@@ -1,6 +1,6 @@
-import type { DeficitEntry, RegionContent } from '@content/schema';
+import type { DeficitEntry, RegionBase } from '@content/schema';
 
-export function recoveryAt(content: RegionContent, week: number): number {
+export function recoveryAt(content: RegionBase, week: number): number {
   const timeline = content.plasticity.timeline;
   let fraction = 0;
   for (const point of timeline) {

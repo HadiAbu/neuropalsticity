@@ -190,3 +190,11 @@ compression.
   only via `curl` (HTTP 200, correct byte size) and `npm run build`
   passing, per this task's environment constraints. A human should open
   `npm run dev` and eyeball it before Task 7 relies on the visual result.
+
+## Update — amygdala slice
+
+The conversion pipeline narrated above is now committed as `scripts/build-brain-glb.mjs`
+(closes the reproducibility gap). It hardcodes the original four-part recentring offset
+`(-0.65, -90.85, 1563.67)` so added parts never shift the frame. Added `Amygdala_R`
+(FMA72832, 1,744 tri) and `Amygdala_L` (FMA72833, 1,736 tri). Node tree is unchanged
+otherwise; GLB is 2,343,936 bytes.

@@ -1,4 +1,4 @@
-import type { BodyPart, DeficitEntry, Hemisphere, RegionContent } from '@content/schema';
+import type { BodyPart, DeficitEntry, Hemisphere, SomatotopicContent as RegionContent } from '@content/schema';
 
 export interface DeficitResult {
   /** Always contralateral to the lesioned hemisphere. */

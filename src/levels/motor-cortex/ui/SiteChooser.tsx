@@ -6,7 +6,7 @@ import { useSimulation } from '@levels/motor-cortex/useSimulation';
 /** Keyboard-reachable twin of clicking a territory on the 3D strip. */
 export function SiteChooser({ onHover }: { onHover: (id: BodyPart | null) => void }) {
   const { state, dispatch } = useSimulation();
-  if (state.phase !== 'stripFocused') return null;
+  if (state.phase !== 'focused') return null;
 
   return (
     <nav aria-label="Choose a lesion site" className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
@@ -16,7 +16,7 @@ export function SiteChooser({ onHover }: { onHover: (id: BodyPart | null) => voi
           <li key={site}>
             <button
               type="button"
-              onClick={() => dispatch({ type: 'SELECT_LESION', site })}
+              onClick={() => dispatch({ type: 'SELECT_SITE', site })}
               onFocus={() => onHover(site)}
               onBlur={() => onHover(null)}
               onMouseEnter={() => onHover(site)}

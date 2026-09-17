@@ -24,7 +24,7 @@ export const levels: LevelEntry[] = [
   { id: 'speech-areas', name: "Broca's & Wernicke's areas", plainName: 'Speech', theme: 'regions', status: 'coming-soon' },
   { id: 'prefrontal-cortex', name: 'Prefrontal cortex', plainName: 'Decisions', theme: 'regions', status: 'coming-soon' },
   { id: 'hippocampus', name: 'Hippocampus', plainName: 'Memory', theme: 'regions', status: 'coming-soon' },
-  { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'coming-soon' },
+  { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'available' },
   { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'coming-soon' },
   { id: 'basal-ganglia', name: 'Basal ganglia', plainName: 'Habit & initiation', theme: 'regions', status: 'coming-soon' },
   { id: 'brainstem', name: 'Hypothalamus & brainstem', plainName: 'Survival', theme: 'regions', status: 'coming-soon' },

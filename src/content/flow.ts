@@ -1,4 +1,4 @@
-import type { Phase } from '@levels/motor-cortex/simulation/machine';
+import type { Phase } from '@lib/simulation/machine';
 
 export interface FlowStep {
   phase: Phase;
@@ -8,7 +8,7 @@ export interface FlowStep {
 /** The five beats every scenario-driven level moves through. */
 export const FLOW_STEPS: FlowStep[] = [
   { phase: 'overview', label: 'Explore' },
-  { phase: 'stripFocused', label: 'Focus' },
+  { phase: 'focused', label: 'Focus' },
   { phase: 'predicting', label: 'Predict' },
   { phase: 'revealed', label: 'Reveal' },
   { phase: 'rehab', label: 'Rewire' },

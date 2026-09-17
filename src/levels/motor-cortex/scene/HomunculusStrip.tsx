@@ -21,8 +21,8 @@ export function HomunculusStrip({ onHover }: { onHover: (id: BodyPart | null) =>
           territory={territory}
           offset={offset}
           length={length}
-          selectable={selectable.has(territory.id) && state.phase === 'stripFocused'}
-          onSelect={() => dispatch({ type: 'SELECT_LESION', site: territory.id })}
+          selectable={selectable.has(territory.id) && state.phase === 'focused'}
+          onSelect={() => dispatch({ type: 'SELECT_SITE', site: territory.id })}
           onHover={onHover}
         />
       ))}

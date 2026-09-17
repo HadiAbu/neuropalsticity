@@ -2,6 +2,35 @@ import type { BodyPart, Hemisphere, Severity, Source } from '@/types';
 
 export type { BodyPart, Hemisphere, Severity, Source };
 
+// ---------------------------------------------------------------------------
+// Shared envelope
+// ---------------------------------------------------------------------------
+
+export interface RecoveryPoint {
+  week: number;
+  recoveryFraction: number;
+}
+
+export interface PlasticityBeat {
+  mechanism: string;
+  timeline: RecoveryPoint[];
+  caveat: string;
+}
+
+export interface RegionBase {
+  id: string;
+  name: string;
+  plainName: string;
+  overview: string;
+  insight: string;
+  plasticity: PlasticityBeat;
+  sources: Source[];
+}
+
+// ---------------------------------------------------------------------------
+// Somatotopic mechanic (motor cortex)
+// ---------------------------------------------------------------------------
+
 export interface Territory {
   id: BodyPart;
   label: string;
@@ -26,37 +55,96 @@ export interface Scenario {
   sources: Source[];
 }
 
-export interface RecoveryPoint {
-  week: number;
-  recoveryFraction: number;
-}
-
-export interface PlasticityBeat {
-  mechanism: string;
-  timeline: RecoveryPoint[];
-  caveat: string;
-}
-
-export interface RegionContent {
-  id: string;
-  name: string;
-  plainName: string;
-  overview: string;
-  insight: string;
+export interface SomatotopicMechanic {
+  kind: 'somatotopic';
   territories: Territory[];
   scenarios: Scenario[];
-  plasticity: PlasticityBeat;
+}
+
+// ---------------------------------------------------------------------------
+// Threat mechanic (amygdala)
+// ---------------------------------------------------------------------------
+
+export type Sweat = 'none' | 'mild' | 'strong';
+
+export interface ResponseProfile {
+  heartRateBpm: number;
+  sweat: Sweat;
+  behavior: string;
+  report: string;
+  /** Only meaningful for social stimuli such as a fearful face. */
+  fearRecognized?: boolean;
+}
+
+export interface PredictionChoice {
+  id: string;
+  label: string;
+  correct: boolean;
+}
+
+export interface ThreatStimulus {
+  id: string;
+  label: string;
+  description: string;
+  choices: PredictionChoice[];
+  intact: ResponseProfile;
+  damaged: ResponseProfile;
+  explanation: string;
+  dayToDay: string;
   sources: Source[];
 }
 
-const SHARE_TOLERANCE = 1e-6;
+export interface ThreatMechanic {
+  kind: 'threat';
+  premise: string;
+  stimuli: ThreatStimulus[];
+}
 
-export function validateRegionContent(content: RegionContent): string[] {
+// ---------------------------------------------------------------------------
+// Union
+// ---------------------------------------------------------------------------
+
+export type SomatotopicContent = RegionBase & SomatotopicMechanic;
+export type ThreatContent = RegionBase & ThreatMechanic;
+export type RegionContent = SomatotopicContent | ThreatContent;
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+const SHARE_TOLERANCE = 1e-6;
+const HEART_RATE_MIN = 30;
+const HEART_RATE_MAX = 220;
+
+function validateBase(content: RegionBase): string[] {
+  const problems: string[] = [];
+  const timeline = content.plasticity.timeline;
+
+  if (timeline.length === 0 || timeline[0].week !== 0) {
+    problems.push('plasticity timeline must start at week 0');
+  }
+  for (let i = 1; i < timeline.length; i++) {
+    if (timeline[i].week <= timeline[i - 1].week) {
+      problems.push('plasticity timeline weeks must strictly increase');
+      break;
+    }
+  }
+  for (const p of timeline) {
+    if (p.recoveryFraction < 0 || p.recoveryFraction > 1) {
+      problems.push(
+        `plasticity recoveryFraction must be between 0 and 1 (got ${p.recoveryFraction} at week ${p.week})`
+      );
+    }
+  }
+  return problems;
+}
+
+function validateSomatotopic(content: SomatotopicContent): string[] {
   const problems: string[] = [];
   const ids = content.territories.map((t) => t.id);
   const declared = new Set(ids);
 
-  if (new Set(ids).size !== ids.length) {
+  if (declared.size !== ids.length) {
     problems.push('territory ids must be unique');
   }
 
@@ -64,12 +152,9 @@ export function validateRegionContent(content: RegionContent): string[] {
   if (Math.abs(shareSum - 1) > SHARE_TOLERANCE) {
     problems.push(`territory corticalShare values must sum to 1 (got ${shareSum})`);
   }
-
   for (const t of content.territories) {
     if (t.corticalShare < 0 || t.corticalShare > 1) {
-      problems.push(
-        `territory "${t.id}" corticalShare must be between 0 and 1 (got ${t.corticalShare})`
-      );
+      problems.push(`territory "${t.id}" corticalShare must be between 0 and 1 (got ${t.corticalShare})`);
     }
   }
 
@@ -95,25 +180,52 @@ export function validateRegionContent(content: RegionContent): string[] {
       }
     }
   }
+  return problems;
+}
 
-  const timeline = content.plasticity.timeline;
-  if (timeline.length === 0 || timeline[0].week !== 0) {
-    problems.push('plasticity timeline must start at week 0');
+function validateProfile(stimulusId: string, which: 'intact' | 'damaged', profile: ResponseProfile | undefined): string[] {
+  if (!profile) return [`stimulus ${stimulusId} is missing a ${which} profile`];
+  if (profile.heartRateBpm < HEART_RATE_MIN || profile.heartRateBpm > HEART_RATE_MAX) {
+    return [
+      `stimulus ${stimulusId} ${which} heartRateBpm must be between ${HEART_RATE_MIN} and ${HEART_RATE_MAX} (got ${profile.heartRateBpm})`,
+    ];
   }
-  for (let i = 1; i < timeline.length; i++) {
-    if (timeline[i].week <= timeline[i - 1].week) {
-      problems.push('plasticity timeline weeks must strictly increase');
+  return [];
+}
+
+function validateThreat(content: ThreatContent): string[] {
+  const problems: string[] = [];
+  const ids = content.stimuli.map((s) => s.id);
+  if (new Set(ids).size !== ids.length) {
+    problems.push('stimulus ids must be unique');
+  }
+
+  for (const stimulus of content.stimuli) {
+    if (stimulus.choices.length < 2) {
+      problems.push(`stimulus ${stimulus.id} must have at least two choices`);
+    }
+    const correct = stimulus.choices.filter((c) => c.correct).length;
+    if (correct !== 1) {
+      problems.push(`stimulus ${stimulus.id} must have exactly one correct choice (got ${correct})`);
+    }
+    problems.push(...validateProfile(stimulus.id, 'intact', stimulus.intact));
+    problems.push(...validateProfile(stimulus.id, 'damaged', stimulus.damaged));
+    if (stimulus.sources.length === 0) {
+      problems.push(`stimulus ${stimulus.id} has no sources`);
+    }
+  }
+  return problems;
+}
+
+export function validateRegionContent(content: RegionContent): string[] {
+  const problems = validateBase(content);
+  switch (content.kind) {
+    case 'somatotopic':
+      problems.push(...validateSomatotopic(content));
       break;
-    }
+    case 'threat':
+      problems.push(...validateThreat(content));
+      break;
   }
-
-  for (const p of timeline) {
-    if (p.recoveryFraction < 0 || p.recoveryFraction > 1) {
-      problems.push(
-        `plasticity recoveryFraction must be between 0 and 1 (got ${p.recoveryFraction} at week ${p.week})`
-      );
-    }
-  }
-
   return problems;
 }

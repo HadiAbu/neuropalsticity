@@ -1,4 +1,4 @@
-import type { BodyPart, RegionContent, Territory } from '@content/schema';
+import type { BodyPart, SomatotopicContent as RegionContent, Territory } from '@content/schema';
 
 export const STRIP_LENGTH = 120;
 export const STRIP_ORIGIN_Y = -STRIP_LENGTH / 2 + 40;
