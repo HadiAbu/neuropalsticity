@@ -1,4 +1,6 @@
-import { hubCopy, levels, type LevelEntry } from '@content/levels';
+import { hubCopy, levels, themeTitles, type LevelEntry, type Theme } from '@content/levels';
+
+const THEME_ORDER: Theme[] = ['regions', 'drugs', 'disorders'];
 
 function LevelCard({ level, onEnter }: { level: LevelEntry; onEnter: (id: string) => void }) {
   const available = level.status === 'available';
@@ -6,10 +8,7 @@ function LevelCard({ level, onEnter }: { level: LevelEntry; onEnter: (id: string
 
   if (!available) {
     return (
-      <div
-        aria-disabled="true"
-        className={`${base} border-slate-700 bg-slate-800/50 text-slate-400`}
-      >
+      <div aria-disabled="true" className={`${base} border-slate-700 bg-slate-800/50 text-slate-400`}>
         <div>
           <p className="text-xs uppercase tracking-wide">{level.plainName}</p>
           <h3 className="mt-1 text-base font-semibold text-slate-300">{level.name}</h3>
@@ -41,14 +40,24 @@ export function LevelHub({ onEnter }: { onEnter: (id: string) => void }) {
         <h1 className="text-4xl font-semibold tracking-tight">{hubCopy.title}</h1>
         <p className="mt-2 max-w-xl text-lg text-slate-300">{hubCopy.tagline}</p>
 
-        <h2 className="mt-12 mb-4 text-sm font-medium uppercase tracking-wide text-slate-400">{hubCopy.sectionTitle}</h2>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {levels.map((level) => (
-            <li key={level.id} className="min-h-36">
-              <LevelCard level={level} onEnter={onEnter} />
-            </li>
-          ))}
-        </ul>
+        {THEME_ORDER.map((theme) => {
+          const entries = levels.filter((l) => l.theme === theme);
+          if (entries.length === 0) return null;
+          return (
+            <section key={theme} aria-labelledby={`theme-${theme}`}>
+              <h2 id={`theme-${theme}`} className="mt-12 mb-4 text-sm font-medium uppercase tracking-wide text-slate-400">
+                {themeTitles[theme]}
+              </h2>
+              <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {entries.map((level) => (
+                  <li key={level.id} className="min-h-36">
+                    <LevelCard level={level} onEnter={onEnter} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
       </div>
     </main>
   );

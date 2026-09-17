@@ -198,3 +198,9 @@ The conversion pipeline narrated above is now committed as `scripts/build-brain-
 `(-0.65, -90.85, 1563.67)` so added parts never shift the frame. Added `Amygdala_R`
 (FMA72832, 1,744 tri) and `Amygdala_L` (FMA72833, 1,736 tri). Node tree is unchanged
 otherwise; GLB is 2,343,936 bytes.
+
+## Update — drugs slice
+
+Added the striatum (`Caudate_L/R`, `Putamen_L/R`; FMA72826–72829) for the reward-pathway
+glow. BodyParts3D has no nucleus accumbens or VTA part; the level marks the VTA with an
+approximate sphere at `(0, -18, -6)` in the mesh frame and labels it approximate in the UI.

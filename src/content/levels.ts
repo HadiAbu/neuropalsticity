@@ -12,9 +12,14 @@ export interface LevelEntry {
 export const hubCopy = {
   title: 'neuropalsticity',
   tagline: 'Cause a lesion. Predict what breaks. Watch the brain rewire.',
-  sectionTitle: 'Regions & functions',
   comingSoon: 'Coming soon',
   enter: 'Play',
+};
+
+export const themeTitles: Record<Theme, string> = {
+  regions: 'Regions & functions',
+  drugs: 'Drugs & the brain',
+  disorders: 'Mental illness & brain damage',
 };
 
 export const levels: LevelEntry[] = [
@@ -28,4 +33,5 @@ export const levels: LevelEntry[] = [
   { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'coming-soon' },
   { id: 'basal-ganglia', name: 'Basal ganglia', plainName: 'Habit & initiation', theme: 'regions', status: 'coming-soon' },
   { id: 'brainstem', name: 'Hypothalamus & brainstem', plainName: 'Survival', theme: 'regions', status: 'coming-soon' },
+  { id: 'drugs-classes', name: 'Alcohol, cocaine, morphine', plainName: 'Chemistry', theme: 'drugs', status: 'available' },
 ];

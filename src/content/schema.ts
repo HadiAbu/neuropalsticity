@@ -101,12 +101,61 @@ export interface ThreatMechanic {
 }
 
 // ---------------------------------------------------------------------------
+// Pharmacologic mechanic (drugs & the brain)
+// ---------------------------------------------------------------------------
+
+export type Transmitter = 'GABA' | 'dopamine' | 'endorphin';
+export type DrugAction = 'enhances-receptor' | 'blocks-reuptake' | 'mimics-transmitter';
+export type DrugClass = 'depressant' | 'stimulant' | 'opioid';
+
+export interface SynapseState {
+  /** 0–1: transmitter sitting in the cleft. */
+  transmitterInCleft: number;
+  /** 0–1: fraction of expressed receptors currently activated. */
+  receptorActivation: number;
+  /** 0–1: receptors the postsynaptic cell expresses (1 = normal; tolerance pulls it down). */
+  receptorDensity: number;
+}
+
+export interface EffectProfile {
+  heartRateBpm: number;
+  reactionTimeMs: number;
+  mood: string;
+  behavior: string;
+  report: string;
+}
+
+export interface Substance {
+  id: string;
+  label: string;
+  drugClass: DrugClass;
+  scenario: string;
+  transmitter: Transmitter;
+  action: DrugAction;
+  synapse: { baseline: SynapseState; acute: SynapseState; tolerant: SynapseState };
+  choices: PredictionChoice[];
+  sober: EffectProfile;
+  acute: EffectProfile;
+  explanation: string;
+  adaptation: string;
+  dayToDay: string;
+  sources: Source[];
+}
+
+export interface PharmacologicMechanic {
+  kind: 'pharmacologic';
+  pathway: string;
+  substances: Substance[];
+}
+
+// ---------------------------------------------------------------------------
 // Union
 // ---------------------------------------------------------------------------
 
 export type SomatotopicContent = RegionBase & SomatotopicMechanic;
 export type ThreatContent = RegionBase & ThreatMechanic;
-export type RegionContent = SomatotopicContent | ThreatContent;
+export type PharmacologicContent = RegionBase & PharmacologicMechanic;
+export type RegionContent = SomatotopicContent | ThreatContent | PharmacologicContent;
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -183,14 +232,52 @@ function validateSomatotopic(content: SomatotopicContent): string[] {
   return problems;
 }
 
-function validateProfile(stimulusId: string, which: 'intact' | 'damaged', profile: ResponseProfile | undefined): string[] {
-  if (!profile) return [`stimulus ${stimulusId} is missing a ${which} profile`];
-  if (profile.heartRateBpm < HEART_RATE_MIN || profile.heartRateBpm > HEART_RATE_MAX) {
-    return [
-      `stimulus ${stimulusId} ${which} heartRateBpm must be between ${HEART_RATE_MIN} and ${HEART_RATE_MAX} (got ${profile.heartRateBpm})`,
-    ];
+function heartRateProblem(label: string, bpm: number): string[] {
+  if (bpm < HEART_RATE_MIN || bpm > HEART_RATE_MAX) {
+    return [`${label} heartRateBpm must be between ${HEART_RATE_MIN} and ${HEART_RATE_MAX} (got ${bpm})`];
   }
   return [];
+}
+
+function validateProfile(stimulusId: string, which: 'intact' | 'damaged', profile: ResponseProfile | undefined): string[] {
+  if (!profile) return [`stimulus ${stimulusId} is missing a ${which} profile`];
+  return heartRateProblem(`stimulus ${stimulusId} ${which}`, profile.heartRateBpm);
+}
+
+function validateChoices(label: string, choices: PredictionChoice[]): string[] {
+  const problems: string[] = [];
+  if (choices.length < 2) problems.push(`${label} must have at least two choices`);
+  const correct = choices.filter((c) => c.correct).length;
+  if (correct !== 1) problems.push(`${label} must have exactly one correct choice (got ${correct})`);
+  return problems;
+}
+
+function validatePharmacologic(content: PharmacologicContent): string[] {
+  const problems: string[] = [];
+  const ids = content.substances.map((s) => s.id);
+  if (new Set(ids).size !== ids.length) {
+    problems.push('substance ids must be unique');
+  }
+
+  for (const s of content.substances) {
+    const label = `substance ${s.id}`;
+    problems.push(...validateChoices(label, s.choices));
+    problems.push(...heartRateProblem(`${label} sober`, s.sober.heartRateBpm));
+    problems.push(...heartRateProblem(`${label} acute`, s.acute.heartRateBpm));
+    for (const stateName of ['baseline', 'acute', 'tolerant'] as const) {
+      const state = s.synapse[stateName];
+      for (const field of ['transmitterInCleft', 'receptorActivation', 'receptorDensity'] as const) {
+        const v = state[field];
+        if (v < 0 || v > 1) {
+          problems.push(`${label} synapse.${stateName}.${field} must be between 0 and 1 (got ${v})`);
+        }
+      }
+    }
+    if (s.sources.length === 0) {
+      problems.push(`${label} has no sources`);
+    }
+  }
+  return problems;
 }
 
 function validateThreat(content: ThreatContent): string[] {
@@ -201,13 +288,7 @@ function validateThreat(content: ThreatContent): string[] {
   }
 
   for (const stimulus of content.stimuli) {
-    if (stimulus.choices.length < 2) {
-      problems.push(`stimulus ${stimulus.id} must have at least two choices`);
-    }
-    const correct = stimulus.choices.filter((c) => c.correct).length;
-    if (correct !== 1) {
-      problems.push(`stimulus ${stimulus.id} must have exactly one correct choice (got ${correct})`);
-    }
+    problems.push(...validateChoices(`stimulus ${stimulus.id}`, stimulus.choices));
     problems.push(...validateProfile(stimulus.id, 'intact', stimulus.intact));
     problems.push(...validateProfile(stimulus.id, 'damaged', stimulus.damaged));
     if (stimulus.sources.length === 0) {
@@ -225,6 +306,9 @@ export function validateRegionContent(content: RegionContent): string[] {
       break;
     case 'threat':
       problems.push(...validateThreat(content));
+      break;
+    case 'pharmacologic':
+      problems.push(...validatePharmacologic(content));
       break;
   }
   return problems;
