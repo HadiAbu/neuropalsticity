@@ -92,3 +92,12 @@ Two further BodyParts3D parts, same license and attribution:
 |---|---|---|
 | FMA72665 | right postcentral gyrus | `PostcentralGyrus_R` |
 | FMA72666 | left postcentral gyrus | `PostcentralGyrus_L` |
+
+## Update — hippocampus slice
+
+Two further BodyParts3D parts, same license and attribution:
+
+| FMA ID | Part | glTF node |
+|---|---|---|
+| FMA72713 | right hippocampus | `Hippocampus_R` |
+| FMA72714 | left hippocampus | `Hippocampus_L` |

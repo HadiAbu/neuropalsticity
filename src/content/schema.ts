@@ -82,22 +82,50 @@ export interface PredictionChoice {
   correct: boolean;
 }
 
-export interface ThreatStimulus {
+/**
+ * The shared shape behind every "predict how a damaged region responds to a scenario"
+ * mechanic: a situation, a guess, and the intact-vs-damaged comparison that follows.
+ * Threat (amygdala) and memory (hippocampus) both build on this; the domain-specific
+ * meaning lives in `Profile`, not in this envelope.
+ */
+export interface ScenarioTrial<Profile> {
   id: string;
   label: string;
   description: string;
   choices: PredictionChoice[];
-  intact: ResponseProfile;
-  damaged: ResponseProfile;
+  intact: Profile;
+  damaged: Profile;
   explanation: string;
   dayToDay: string;
   sources: Source[];
 }
 
+export type ThreatStimulus = ScenarioTrial<ResponseProfile>;
+
 export interface ThreatMechanic {
   kind: 'threat';
   premise: string;
   stimuli: ThreatStimulus[];
+}
+
+// ---------------------------------------------------------------------------
+// Memory mechanic (hippocampus)
+// ---------------------------------------------------------------------------
+
+export interface MemoryProfile {
+  formsNewMemory: boolean;
+  retainsOldMemories: boolean;
+  learnsSkillsProcedurally: boolean;
+  behavior: string;
+  report: string;
+}
+
+export type MemoryTrial = ScenarioTrial<MemoryProfile>;
+
+export interface MemoryMechanic {
+  kind: 'memory';
+  premise: string;
+  trials: MemoryTrial[];
 }
 
 // ---------------------------------------------------------------------------
@@ -155,7 +183,8 @@ export interface PharmacologicMechanic {
 export type SomatotopicContent = RegionBase & SomatotopicMechanic;
 export type ThreatContent = RegionBase & ThreatMechanic;
 export type PharmacologicContent = RegionBase & PharmacologicMechanic;
-export type RegionContent = SomatotopicContent | ThreatContent | PharmacologicContent;
+export type MemoryContent = RegionBase & MemoryMechanic;
+export type RegionContent = SomatotopicContent | ThreatContent | PharmacologicContent | MemoryContent;
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -252,6 +281,33 @@ function validateChoices(label: string, choices: PredictionChoice[]): string[] {
   return problems;
 }
 
+/**
+ * The checks every ScenarioTrial needs regardless of its Profile type: unique ids,
+ * a well-formed choice set, and at least one source per trial. Domain-specific profile
+ * checks (heart rate ranges, etc.) are the caller's job — pass them as `validateProfiles`.
+ */
+function validateScenarioTrials<Profile>(
+  idNoun: string,
+  trials: ScenarioTrial<Profile>[],
+  validateProfiles: (label: string, trial: ScenarioTrial<Profile>) => string[]
+): string[] {
+  const problems: string[] = [];
+  const ids = trials.map((t) => t.id);
+  if (new Set(ids).size !== ids.length) {
+    problems.push(`${idNoun} ids must be unique`);
+  }
+
+  for (const trial of trials) {
+    const label = `${idNoun} ${trial.id}`;
+    problems.push(...validateChoices(label, trial.choices));
+    problems.push(...validateProfiles(label, trial));
+    if (trial.sources.length === 0) {
+      problems.push(`${label} has no sources`);
+    }
+  }
+  return problems;
+}
+
 function validatePharmacologic(content: PharmacologicContent): string[] {
   const problems: string[] = [];
   const ids = content.substances.map((s) => s.id);
@@ -281,21 +337,19 @@ function validatePharmacologic(content: PharmacologicContent): string[] {
 }
 
 function validateThreat(content: ThreatContent): string[] {
-  const problems: string[] = [];
-  const ids = content.stimuli.map((s) => s.id);
-  if (new Set(ids).size !== ids.length) {
-    problems.push('stimulus ids must be unique');
-  }
+  return validateScenarioTrials('stimulus', content.stimuli, (_label, stimulus) => [
+    ...validateProfile(stimulus.id, 'intact', stimulus.intact),
+    ...validateProfile(stimulus.id, 'damaged', stimulus.damaged),
+  ]);
+}
 
-  for (const stimulus of content.stimuli) {
-    problems.push(...validateChoices(`stimulus ${stimulus.id}`, stimulus.choices));
-    problems.push(...validateProfile(stimulus.id, 'intact', stimulus.intact));
-    problems.push(...validateProfile(stimulus.id, 'damaged', stimulus.damaged));
-    if (stimulus.sources.length === 0) {
-      problems.push(`stimulus ${stimulus.id} has no sources`);
-    }
-  }
-  return problems;
+function validateMemory(content: MemoryContent): string[] {
+  return validateScenarioTrials('trial', content.trials, (_label, trial) => {
+    const problems: string[] = [];
+    if (!trial.intact) problems.push(`trial ${trial.id} is missing an intact profile`);
+    if (!trial.damaged) problems.push(`trial ${trial.id} is missing a damaged profile`);
+    return problems;
+  });
 }
 
 export function validateRegionContent(content: RegionContent): string[] {
@@ -309,6 +363,9 @@ export function validateRegionContent(content: RegionContent): string[] {
       break;
     case 'pharmacologic':
       problems.push(...validatePharmacologic(content));
+      break;
+    case 'memory':
+      problems.push(...validateMemory(content));
       break;
   }
   return problems;
