@@ -1,21 +1,27 @@
-import motorCortex from '@content/regions/motor-cortex';
-import { useSimulation } from '@levels/motor-cortex/useSimulation';
+import type { SomatotopicContent } from '@content/schema';
+import { useSimulation } from '@lib/somatotopic/useSimulation';
 
-export function RehabTimeline() {
+interface Props {
+  content: SomatotopicContent;
+  title: string;
+  unitLabel: string;
+}
+
+export function RehabTimeline({ content, title, unitLabel }: Props) {
   const { state, dispatch } = useSimulation();
   if (state.phase !== 'rehab') return null;
 
-  const { timeline, mechanism, caveat } = motorCortex.plasticity;
+  const { timeline, mechanism, caveat } = content.plasticity;
   const currentIndex = Math.max(0, timeline.findIndex((p) => p.week === state.rehabWeek));
   const current = timeline[currentIndex];
 
   return (
     <section className="rounded-lg bg-slate-800/95 p-5 text-slate-100 shadow-lg">
-      <h2 className="mb-2 text-lg font-semibold">The brain starts rewiring</h2>
+      <h2 className="mb-2 text-lg font-semibold">{title}</h2>
       <p className="mb-4 text-sm leading-relaxed text-slate-300">{mechanism}</p>
 
       <label htmlFor="rehab-week" className="mb-1 block text-sm font-medium">
-        Week {current.week} — {Math.round(current.recoveryFraction * 100)}% of lost function regained
+        Week {current.week} — {Math.round(current.recoveryFraction * 100)}% of {unitLabel}
       </label>
       <input
         id="rehab-week"

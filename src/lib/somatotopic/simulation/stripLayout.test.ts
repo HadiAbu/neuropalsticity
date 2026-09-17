@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import motorCortex from '@content/regions/motor-cortex';
 import {
   STRIP_LENGTH, stripLayout, segmentCenter,
-} from '@levels/motor-cortex/simulation/stripLayout';
+} from '@lib/somatotopic/simulation/stripLayout';
 
 describe('stripLayout', () => {
   it('lays segments out medial to lateral with no gaps', () => {

@@ -9,9 +9,9 @@ describe('level registry', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('offers exactly the motor cortex, amygdala and drugs levels as available today', () => {
+  it('offers exactly the available levels built so far', () => {
     expect(levels.filter((l) => l.status === 'available').map((l) => l.id)).toEqual([
-      'motor-cortex', 'amygdala', 'drugs-classes',
+      'motor-cortex', 'somatosensory-cortex', 'amygdala', 'drugs-classes',
     ]);
   });
 

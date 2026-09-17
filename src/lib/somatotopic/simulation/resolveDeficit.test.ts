@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import motorCortex from '@content/regions/motor-cortex';
-import { resolveDeficit, selectableSites } from '@levels/motor-cortex/simulation/resolveDeficit';
+import { resolveDeficit, selectableSites } from '@lib/somatotopic/simulation/resolveDeficit';
 
 describe('selectableSites', () => {
   it('derives selectable territories from authored scenarios', () => {

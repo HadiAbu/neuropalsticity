@@ -35,8 +35,8 @@ export const themeTitles: Record<Theme, string> = {
 export const levels: LevelEntry[] = [
   { id: 'motor-cortex', name: 'Primary motor cortex', plainName: 'Movement', theme: 'regions', status: 'available',
     anatomy: { nodePrefixes: ['PrecentralGyrus'] } },
-  { id: 'somatosensory-cortex', name: 'Somatosensory cortex', plainName: 'Touch', theme: 'regions', status: 'coming-soon',
-    anatomy: { marker: [30, 58, -15] } },
+  { id: 'somatosensory-cortex', name: 'Somatosensory cortex', plainName: 'Touch', theme: 'regions', status: 'available',
+    anatomy: { nodePrefixes: ['PostcentralGyrus'] } },
   { id: 'visual-cortex', name: 'Visual cortex', plainName: 'Sight', theme: 'regions', status: 'coming-soon',
     anatomy: { marker: [0, 5, -70] } },
   { id: 'speech-areas', name: "Broca's & Wernicke's areas", plainName: 'Speech', theme: 'regions', status: 'coming-soon',

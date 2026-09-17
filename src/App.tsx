@@ -5,7 +5,8 @@ import { SimulationProvider as AmygdalaSimulation } from '@levels/amygdala/useSi
 import { DrugsLevel } from '@levels/drugs/DrugsLevel';
 import { SimulationProvider as DrugsSimulation } from '@levels/drugs/useSimulation';
 import { MotorCortexLevel } from '@levels/motor-cortex/MotorCortexLevel';
-import { SimulationProvider as MotorSimulation } from '@levels/motor-cortex/useSimulation';
+import { SomatosensoryCortexLevel } from '@levels/somatosensory-cortex/SomatosensoryCortexLevel';
+import { SimulationProvider as SomatotopicSimulation } from '@lib/somatotopic/useSimulation';
 
 export default function App() {
   const [levelId, setLevelId] = useState<string | null>(null);
@@ -15,9 +16,15 @@ export default function App() {
   switch (levelId) {
     case 'motor-cortex':
       return (
-        <MotorSimulation key={levelId}>
+        <SomatotopicSimulation key={levelId}>
           <MotorCortexLevel onExit={exit} />
-        </MotorSimulation>
+        </SomatotopicSimulation>
+      );
+    case 'somatosensory-cortex':
+      return (
+        <SomatotopicSimulation key={levelId}>
+          <SomatosensoryCortexLevel onExit={exit} />
+        </SomatotopicSimulation>
       );
     case 'amygdala':
       return (

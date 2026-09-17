@@ -35,6 +35,8 @@ const PARTS = [
   { fma: 'FMA72827', node: 'Caudate_L' },
   { fma: 'FMA72828', node: 'Putamen_R' },
   { fma: 'FMA72829', node: 'Putamen_L' },
+  { fma: 'FMA72665', node: 'PostcentralGyrus_R' },
+  { fma: 'FMA72666', node: 'PostcentralGyrus_L' },
 ];
 
 // GLTFExporter reaches for browser FileReader when producing binary output.

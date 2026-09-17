@@ -1,4 +1,4 @@
-import type { BodyPart, DeficitEntry, Hemisphere, SomatotopicContent as RegionContent } from '@content/schema';
+import type { BodyPart, DeficitEntry, Hemisphere, SomatotopicContent } from '@content/schema';
 
 export interface DeficitResult {
   /** Always contralateral to the lesioned hemisphere. */
@@ -8,13 +8,13 @@ export interface DeficitResult {
   entries: DeficitEntry[];
 }
 
-export function selectableSites(content: RegionContent): BodyPart[] {
+export function selectableSites(content: SomatotopicContent): BodyPart[] {
   return content.scenarios.map((s) => s.siteTerritory);
 }
 
 export function resolveDeficit(
   site: BodyPart,
-  content: RegionContent,
+  content: SomatotopicContent,
   hemisphere: Hemisphere
 ): DeficitResult {
   const scenario = content.scenarios.find((s) => s.siteTerritory === site);

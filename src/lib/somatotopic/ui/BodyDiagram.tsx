@@ -39,6 +39,7 @@ interface Props {
   /** Body side carrying the deficit; null shows a healthy figure. */
   side: Hemisphere | null;
   highlighted: BodyPart | null;
+  severityLabels?: Partial<Record<Severity, string>>;
 }
 
 /**
@@ -46,7 +47,8 @@ interface Props {
  * (x < 100). Deficits are one-sided, so the affected half is drawn with the
  * resolved severities and the other half as spared, using two clip paths.
  */
-export function BodyDiagram({ entries, side, highlighted }: Props) {
+export function BodyDiagram({ entries, side, highlighted, severityLabels }: Props) {
+  const labels = { ...SEVERITY_LABEL, ...severityLabels };
   const severityOf = new Map(entries.map((e) => [e.part, e.severity]));
   const affectedClip = side === 'right' ? 'url(#viewer-left)' : side === 'left' ? 'url(#viewer-right)' : undefined;
   const healthyClip = side === 'right' ? 'url(#viewer-right)' : side === 'left' ? 'url(#viewer-left)' : undefined;
@@ -65,7 +67,7 @@ export function BodyDiagram({ entries, side, highlighted }: Props) {
             stroke={highlighted === part ? '#fbbf24' : '#0f172a'}
             strokeWidth={highlighted === part ? 3 : 1}
           >
-            <title>{`${part}: ${SEVERITY_LABEL[severity]}`}</title>
+            <title>{`${part}: ${labels[severity]}`}</title>
           </ellipse>
         ));
       })}
@@ -98,7 +100,7 @@ export function BodyDiagram({ entries, side, highlighted }: Props) {
         {(['complete', 'partial', 'spared'] as Severity[]).map((severity) => (
           <span key={severity} className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: SEVERITY_FILL[severity] }} />
-            {SEVERITY_LABEL[severity]}
+            {labels[severity]}
           </span>
         ))}
       </figcaption>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import motorCortex from '@content/regions/motor-cortex';
-import { recoveryAt, applyRecovery } from '@levels/motor-cortex/simulation/recovery';
+import { recoveryAt, applyRecovery } from '@lib/simulation/recovery';
 import type { DeficitEntry } from '@content/schema';
 
 describe('recoveryAt', () => {
