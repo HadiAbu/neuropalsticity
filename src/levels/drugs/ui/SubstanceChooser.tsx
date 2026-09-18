@@ -14,8 +14,8 @@ export function SubstanceChooser() {
 
   return (
     <nav aria-label="Choose a substance" className="rounded-lg bg-slate-800/95 p-5 text-slate-100 shadow-lg">
-      <h2 className="mb-1 text-lg font-semibold">Pick a substance</h2>
-      <p className="mb-4 text-sm text-slate-300">Same person, same evening. What happens at the synapse?</p>
+      <h2 className="mb-1 text-xl font-semibold">Pick a substance</h2>
+      <p className="mb-4 text-base text-slate-300">Same person, same evening. What happens at the synapse?</p>
       <ul className="flex flex-col gap-2">
         {drugs.substances.map((s) => (
           <li key={s.id}>
@@ -26,9 +26,9 @@ export function SubstanceChooser() {
             >
               <span className="flex items-baseline justify-between">
                 <span className="font-medium">{s.label}</span>
-                <span className="text-xs uppercase tracking-wide text-amber-300">{CLASS_LABEL[s.drugClass]}</span>
+                <span className="text-sm uppercase tracking-wide text-amber-300">{CLASS_LABEL[s.drugClass]}</span>
               </span>
-              <span className="mt-0.5 block text-xs text-slate-300">{s.scenario}</span>
+              <span className="mt-0.5 block text-sm text-slate-300">{s.scenario}</span>
             </button>
           </li>
         ))}

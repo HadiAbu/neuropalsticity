@@ -43,9 +43,9 @@ export function CerebellumLevel({ onExit }: { onExit: () => void }) {
       >
         {state.phase === 'focused' && (
           <div className="rounded-lg bg-slate-800/90 p-5 shadow-lg">
-            <h2 className="mb-2 text-lg font-semibold">A real-time comparator</h2>
-            <p className="mb-3 text-sm leading-relaxed text-slate-300">{cerebellum.insight}</p>
-            <p className="rounded-md border-l-2 border-amber-400 bg-slate-900/60 p-3 text-sm text-slate-300">{cerebellum.premise}</p>
+            <h2 className="mb-2 text-xl font-semibold">A real-time comparator</h2>
+            <p className="mb-3 text-base leading-relaxed text-slate-300">{cerebellum.insight}</p>
+            <p className="rounded-md border-l-2 border-amber-400 bg-slate-900/60 p-3 text-base text-slate-300">{cerebellum.premise}</p>
           </div>
         )}
         <TrialChooser />

@@ -54,9 +54,9 @@ export function SynapseView({ state, transmitter, action, drugActive, title }: P
 
   return (
     <figure className="rounded-lg bg-slate-800/95 p-4 shadow-lg">
-      <figcaption className="mb-2 flex items-baseline justify-between text-sm">
+      <figcaption className="mb-2 flex items-baseline justify-between text-base">
         <span className="font-semibold text-slate-100">{title}</span>
-        <span className="text-xs text-slate-300">{transmitter} synapse</span>
+        <span className="text-sm text-slate-300">{transmitter} synapse</span>
       </figcaption>
 
       <svg viewBox="0 0 320 240" className="w-full" role="img" aria-label={summary}>
@@ -104,13 +104,13 @@ export function SynapseView({ state, transmitter, action, drugActive, title }: P
         })}
       </svg>
 
-      <dl className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
+      <dl className="mt-2 grid grid-cols-3 gap-2 text-center text-sm">
         <div><dt className="text-slate-400">In the cleft</dt><dd className="font-semibold text-slate-100">{Math.round(state.transmitterInCleft * 100)}%</dd></div>
         <div><dt className="text-slate-400">Receptors</dt><dd className="font-semibold text-slate-100">{receptorsShown} / {RECEPTOR_SLOTS}</dd></div>
         <div><dt className="text-slate-400">Active</dt><dd className="font-semibold text-slate-100">{receptorsLit}</dd></div>
       </dl>
       {drugActive && (
-        <p className="mt-2 text-center text-xs text-amber-200">
+        <p className="mt-2 text-center text-sm text-amber-200">
           <span className="mr-1 inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: DRUG_COLOR }} />
           drug molecule — {action.replace('-', ' ')}
         </p>

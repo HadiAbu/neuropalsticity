@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
+import { Children, type ReactNode } from 'react';
 import { flowCopy } from '@content/flow';
 import type { Phase } from '@lib/simulation/machine';
 import { ProgressRail } from '@lib/ui/ProgressRail';
 
 const BUTTON =
-  'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
+  'rounded-md bg-slate-700 px-3 py-1.5 text-base text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
 interface Props {
   title: string;
@@ -38,12 +38,12 @@ export function LevelShell({
           <button type="button" className={BUTTON} onClick={onExit}>
             ← {flowCopy.exit}
           </button>
-          <h1 className="text-lg font-semibold sm:text-xl">{title}</h1>
+          <h1 className="text-xl font-semibold sm:text-2xl">{title}</h1>
         </div>
         <ProgressRail phase={phase} onJump={onJump} />
         {phase === 'overview' ? (
           <div className="max-w-md rounded-lg bg-slate-800/90 p-4 shadow-lg">
-            <p className="mb-3 text-sm leading-relaxed text-slate-300">{overview}</p>
+            <p className="mb-3 text-base leading-relaxed text-slate-300">{overview}</p>
             <button type="button" className={BUTTON} onClick={onFocus}>
               {focusLabel}
             </button>
@@ -58,14 +58,18 @@ export function LevelShell({
       {phase !== 'overview' && (
         // Keyed by phase so the browser resets scroll to the top on every transition —
         // otherwise a scroll position from a taller earlier phase (e.g. focused) carries
-        // over and can leave a shorter new phase's heading scrolled out of view.
+        // over and can leave a shorter new phase's heading scrolled out of view. The same
+        // remount also makes every child below a fresh DOM insertion each phase, which is
+        // what makes their entrance animation replay on every transition, not just once.
         <aside
           key={phase}
           className="absolute inset-x-0 bottom-0 z-10 flex h-[55vh] flex-col gap-4 overflow-y-auto
                      bg-slate-900/95 px-4 pb-4 pt-3
                      sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:h-auto sm:w-96 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0"
         >
-          {children}
+          {Children.map(children, (child) => (
+            <div className="animate-panel-in">{child}</div>
+          ))}
         </aside>
       )}
     </>

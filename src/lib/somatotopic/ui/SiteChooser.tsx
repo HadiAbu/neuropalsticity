@@ -9,7 +9,7 @@ export function SiteChooser({ content, onHover }: { content: SomatotopicContent;
 
   return (
     <nav aria-label="Choose a lesion site" className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
-      <p className="mb-2 text-sm text-slate-300">Damage one of the highlighted territories:</p>
+      <p className="mb-2 text-base text-slate-300">Damage one of the highlighted territories:</p>
       <ul className="flex flex-wrap gap-2">
         {selectableSites(content).map((site) => (
           <li key={site}>
@@ -20,7 +20,7 @@ export function SiteChooser({ content, onHover }: { content: SomatotopicContent;
               onBlur={() => onHover(null)}
               onMouseEnter={() => onHover(site)}
               onMouseLeave={() => onHover(null)}
-              className="rounded-md bg-amber-500 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-amber-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+              className="rounded-md bg-amber-500 px-3 py-1.5 text-base font-medium text-slate-900 hover:bg-amber-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               {content.territories.find((t) => t.id === site)?.label}
             </button>

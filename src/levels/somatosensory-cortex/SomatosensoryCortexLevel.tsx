@@ -80,7 +80,7 @@ export function SomatosensoryCortexLevel({ onExit }: { onExit: () => void }) {
       </LevelShell>
 
       {hoveredLabel && (
-        <div className="pointer-events-none absolute bottom-[calc(55vh+1rem)] left-4 z-10 rounded-md bg-slate-800/90 px-3 py-1.5 text-sm shadow-lg sm:bottom-4">
+        <div className="pointer-events-none absolute bottom-[calc(55vh+1rem)] left-4 z-10 rounded-md bg-slate-800/90 px-3 py-1.5 text-base shadow-lg sm:bottom-4">
           {hoveredLabel}
         </div>
       )}

@@ -52,7 +52,7 @@ export function DrugsLevel({ onExit }: { onExit: () => void }) {
         onJump={jumpTo}
         onExit={onExit}
       >
-        <p className="rounded-md bg-slate-800/80 px-3 py-2 text-xs text-slate-300">{drugs.pathway}</p>
+        <p className="rounded-md bg-slate-800/80 px-3 py-2 text-sm text-slate-300">{drugs.pathway}</p>
         <SynapseView
           state={synapse.state}
           transmitter={substance.transmitter}
@@ -62,8 +62,8 @@ export function DrugsLevel({ onExit }: { onExit: () => void }) {
         />
         {state.phase === 'focused' && (
           <div className="rounded-lg bg-slate-800/90 p-5 shadow-lg">
-            <h2 className="mb-2 text-lg font-semibold">Three ways in</h2>
-            <p className="text-sm leading-relaxed text-slate-300">{drugs.insight}</p>
+            <h2 className="mb-2 text-xl font-semibold">Three ways in</h2>
+            <p className="text-base leading-relaxed text-slate-300">{drugs.insight}</p>
           </div>
         )}
         <SubstanceChooser />
