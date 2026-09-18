@@ -56,7 +56,11 @@ export function LevelShell({
       </header>
 
       {phase !== 'overview' && (
+        // Keyed by phase so the browser resets scroll to the top on every transition —
+        // otherwise a scroll position from a taller earlier phase (e.g. focused) carries
+        // over and can leave a shorter new phase's heading scrolled out of view.
         <aside
+          key={phase}
           className="absolute inset-x-0 bottom-0 z-10 flex h-[55vh] flex-col gap-4 overflow-y-auto
                      bg-slate-900/95 px-4 pb-4 pt-3
                      sm:inset-x-auto sm:bottom-4 sm:right-4 sm:top-4 sm:h-auto sm:w-96 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0"
