@@ -14,7 +14,7 @@ export function ProgressRail({ phase, onJump }: Props) {
 
   return (
     <nav aria-label={flowCopy.railLabel} className="rounded-lg bg-slate-800/90 px-3 py-2 shadow-lg">
-      <ol className="flex items-center gap-1 text-xs">
+      <ol className="flex items-center gap-1 text-sm">
         {FLOW_STEPS.map((step, i) => {
           const done = i < currentIndex;
           const current = i === currentIndex;

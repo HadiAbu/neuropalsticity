@@ -28,8 +28,8 @@ export function PredictionPrompt({ content, prompt }: Props) {
 
   return (
     <section className="rounded-lg bg-slate-800/95 p-5 text-slate-100 shadow-lg">
-      <h2 className="mb-1 text-lg font-semibold">{prompt}</h2>
-      <p className="mb-4 text-sm text-slate-300">Commit to a guess. Getting it wrong is the interesting outcome.</p>
+      <h2 className="mb-1 text-xl font-semibold">{prompt}</h2>
+      <p className="mb-4 text-base text-slate-300">Commit to a guess. Getting it wrong is the interesting outcome.</p>
       <ul className="flex flex-col gap-2">
         {choices.map((part) => (
           <li key={part}>
@@ -42,7 +42,7 @@ export function PredictionPrompt({ content, prompt }: Props) {
       <button
         type="button"
         onClick={() => dispatch({ type: 'SKIP_PREDICTION' })}
-        className="mt-3 text-sm text-slate-300 underline hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        className="mt-3 text-base text-slate-300 underline hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
       >
         Just show me
       </button>

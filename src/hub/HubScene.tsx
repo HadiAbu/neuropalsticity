@@ -133,7 +133,7 @@ function HubBrain({ hoveredId, onHover, onEnter }: HoverProps) {
 
       {hovered && labelAt && (
         <Html position={labelAt} center distanceFactor={220} style={{ pointerEvents: 'none' }}>
-          <div className="whitespace-nowrap rounded-md bg-slate-900/90 px-2.5 py-1.5 text-xs text-slate-100 shadow-lg ring-1 ring-slate-600">
+          <div className="whitespace-nowrap rounded-md bg-slate-900/90 px-2.5 py-1.5 text-sm text-slate-100 shadow-lg ring-1 ring-slate-600">
             <span className="font-semibold">{hovered.name}</span>
             {hovered.status !== 'available' && <span className="ml-2 text-slate-400">{hubCopy.comingSoon}</span>}
             {hovered.anatomy.marker && !hovered.anatomy.nodePrefixes && (

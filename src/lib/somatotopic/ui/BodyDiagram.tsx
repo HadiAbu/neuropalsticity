@@ -96,7 +96,7 @@ export function BodyDiagram({ entries, side, highlighted, severityLabels }: Prop
         )}
       </svg>
 
-      <figcaption className="mt-3 flex flex-wrap justify-center gap-4 text-xs text-slate-300">
+      <figcaption className="mt-3 flex flex-wrap justify-center gap-4 text-sm text-slate-300">
         {(['complete', 'partial', 'spared'] as Severity[]).map((severity) => (
           <span key={severity} className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: SEVERITY_FILL[severity] }} />
