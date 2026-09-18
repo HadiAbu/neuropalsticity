@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { flowCopy } from '@content/flow';
 import somatosensoryCortex from '@content/regions/somatosensory-cortex';
 import type { BodyPart } from '@content/schema';
 import { BrainScene } from '@lib/scene/BrainScene';
@@ -16,11 +15,8 @@ import { PredictionPrompt } from '@lib/somatotopic/ui/PredictionPrompt';
 import { RehabTimeline } from '@lib/somatotopic/ui/RehabTimeline';
 import { SiteChooser } from '@lib/somatotopic/ui/SiteChooser';
 import { useSimulation } from '@lib/somatotopic/useSimulation';
-import { ProgressRail } from '@lib/ui/ProgressRail';
+import { LevelShell } from '@lib/ui/LevelShell';
 import { BrainMesh } from '@levels/somatosensory-cortex/scene/BrainMesh';
-
-const BUTTON =
-  'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
 const FOCUSED: Framing = { position: [80, 50, -215], target: [45, 15, 0] };
 const FRAMING: Partial<Record<Phase, Framing>> = {
@@ -61,45 +57,30 @@ export function SomatosensoryCortexLevel({ onExit }: { onExit: () => void }) {
         <LesionMarker content={somatosensoryCortex} />
       </BrainScene>
 
-      <header className="absolute left-4 top-4 flex max-w-sm flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <button type="button" className={BUTTON} onClick={onExit}>
-            ← {flowCopy.exit}
-          </button>
-          <h1 className="text-xl font-semibold">{somatosensoryCortex.name}</h1>
-        </div>
-        <ProgressRail phase={state.phase} onJump={jumpTo} />
-        {state.phase === 'overview' ? (
-          <div className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
-            <p className="mb-3 text-sm leading-relaxed text-slate-300">{somatosensoryCortex.overview}</p>
-            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'FOCUS' })}>
-              Focus the touch strip
-            </button>
-          </div>
-        ) : (
-          <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}>
-            Back to the whole brain
-          </button>
-        )}
-      </header>
-
-      {state.phase !== 'overview' && (
-        <aside className="absolute bottom-4 right-4 top-4 flex w-96 flex-col gap-4 overflow-y-auto">
-          {state.phase === 'focused' && <InsightPanel content={somatosensoryCortex} title="Why does the map favour lips and fingertips?" />}
-          <SiteChooser content={somatosensoryCortex} onHover={setHoveredPart} />
-          <PredictionPrompt content={somatosensoryCortex} prompt="Before you look — what loses feeling?" />
-          <DeficitPanel
-            content={somatosensoryCortex}
-            crossingExplanation={CROSSING_EXPLANATION}
-            advanceLabel="What happens next?"
-          />
-          <RehabTimeline content={somatosensoryCortex} title="The brain relearns how to feel" unitLabel="feeling regained" />
-          <BodyDiagram entries={entries} side={result?.side ?? null} highlighted={hoveredPart} severityLabels={SEVERITY_LABELS} />
-        </aside>
-      )}
+      <LevelShell
+        title={somatosensoryCortex.name}
+        overview={somatosensoryCortex.overview}
+        focusLabel="Focus the touch strip"
+        phase={state.phase}
+        onFocus={() => dispatch({ type: 'FOCUS' })}
+        onReturnToOverview={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}
+        onJump={jumpTo}
+        onExit={onExit}
+      >
+        {state.phase === 'focused' && <InsightPanel content={somatosensoryCortex} title="Why does the map favour lips and fingertips?" />}
+        <SiteChooser content={somatosensoryCortex} onHover={setHoveredPart} />
+        <PredictionPrompt content={somatosensoryCortex} prompt="Before you look — what loses feeling?" />
+        <DeficitPanel
+          content={somatosensoryCortex}
+          crossingExplanation={CROSSING_EXPLANATION}
+          advanceLabel="What happens next?"
+        />
+        <RehabTimeline content={somatosensoryCortex} title="The brain relearns how to feel" unitLabel="feeling regained" />
+        <BodyDiagram entries={entries} side={result?.side ?? null} highlighted={hoveredPart} severityLabels={SEVERITY_LABELS} />
+      </LevelShell>
 
       {hoveredLabel && (
-        <div className="pointer-events-none absolute bottom-4 left-4 rounded-md bg-slate-800/90 px-3 py-1.5 text-sm shadow-lg">
+        <div className="pointer-events-none absolute bottom-[calc(55vh+1rem)] left-4 z-10 rounded-md bg-slate-800/90 px-3 py-1.5 text-sm shadow-lg sm:bottom-4">
           {hoveredLabel}
         </div>
       )}

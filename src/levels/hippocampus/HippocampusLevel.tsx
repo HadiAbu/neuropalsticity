@@ -1,18 +1,14 @@
-import { flowCopy } from '@content/flow';
 import hippocampus from '@content/regions/hippocampus';
 import { BrainScene } from '@lib/scene/BrainScene';
 import { CameraRig, type Framing } from '@lib/scene/CameraRig';
 import type { Phase } from '@lib/simulation/machine';
-import { ProgressRail } from '@lib/ui/ProgressRail';
+import { LevelShell } from '@lib/ui/LevelShell';
 import { HippocampusBrainMesh } from '@levels/hippocampus/scene/HippocampusBrainMesh';
 import { CompensationTimeline } from '@levels/hippocampus/ui/CompensationTimeline';
 import { MemoryDashboard } from '@levels/hippocampus/ui/MemoryDashboard';
 import { PredictionPrompt } from '@levels/hippocampus/ui/PredictionPrompt';
 import { TrialChooser } from '@levels/hippocampus/ui/TrialChooser';
 import { useSimulation } from '@levels/hippocampus/useSimulation';
-
-const BUTTON =
-  'rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400';
 
 const FOCUSED: Framing = { position: [95, 10, 175], target: [0, -15, 5] };
 const FRAMING: Partial<Record<Phase, Framing>> = {
@@ -35,43 +31,28 @@ export function HippocampusLevel({ onExit }: { onExit: () => void }) {
         <CameraRig phase={state.phase} framing={FRAMING} />
       </BrainScene>
 
-      <header className="absolute left-4 top-4 flex max-w-sm flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <button type="button" className={BUTTON} onClick={onExit}>
-            ← {flowCopy.exit}
-          </button>
-          <h1 className="text-xl font-semibold">{hippocampus.name}</h1>
-        </div>
-        <ProgressRail phase={state.phase} onJump={jumpTo} />
-        {state.phase === 'overview' ? (
-          <div className="rounded-lg bg-slate-800/90 p-4 shadow-lg">
-            <p className="mb-3 text-sm leading-relaxed text-slate-300">{hippocampus.overview}</p>
-            <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'FOCUS' })}>
-              Look inside
-            </button>
+      <LevelShell
+        title={hippocampus.name}
+        overview={hippocampus.overview}
+        focusLabel="Look inside"
+        phase={state.phase}
+        onFocus={() => dispatch({ type: 'FOCUS' })}
+        onReturnToOverview={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}
+        onJump={jumpTo}
+        onExit={onExit}
+      >
+        {state.phase === 'focused' && (
+          <div className="rounded-lg bg-slate-800/90 p-5 shadow-lg">
+            <h2 className="mb-2 text-lg font-semibold">Memory is not one thing</h2>
+            <p className="mb-3 text-sm leading-relaxed text-slate-300">{hippocampus.insight}</p>
+            <p className="rounded-md border-l-2 border-amber-400 bg-slate-900/60 p-3 text-sm text-slate-300">{hippocampus.premise}</p>
           </div>
-        ) : (
-          <button type="button" className={BUTTON} onClick={() => dispatch({ type: 'RETURN_TO_OVERVIEW' })}>
-            Back to the whole brain
-          </button>
         )}
-      </header>
-
-      {state.phase !== 'overview' && (
-        <aside className="absolute bottom-4 right-4 top-4 flex w-[26rem] flex-col gap-4 overflow-y-auto">
-          {state.phase === 'focused' && (
-            <div className="rounded-lg bg-slate-800/90 p-5 shadow-lg">
-              <h2 className="mb-2 text-lg font-semibold">Memory is not one thing</h2>
-              <p className="mb-3 text-sm leading-relaxed text-slate-300">{hippocampus.insight}</p>
-              <p className="rounded-md border-l-2 border-amber-400 bg-slate-900/60 p-3 text-sm text-slate-300">{hippocampus.premise}</p>
-            </div>
-          )}
-          <TrialChooser />
-          <PredictionPrompt />
-          <MemoryDashboard />
-          <CompensationTimeline />
-        </aside>
-      )}
+        <TrialChooser />
+        <PredictionPrompt />
+        <MemoryDashboard />
+        <CompensationTimeline />
+      </LevelShell>
     </div>
   );
 }
