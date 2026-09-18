@@ -34,9 +34,11 @@ function HubBrain({ hoveredId, onHover, onEnter }: HoverProps) {
     const glowHoverByLevel = new Map<string, THREE.MeshStandardMaterial>();
     for (const level of levels) {
       if (level.status !== 'available') continue;
+      // A moderate emissive intensity keeps hues legible rather than blown out; the hub's
+      // level colors are lower-intensity than the old single uniform-amber value.
       const color = new THREE.Color(level.color);
-      glowByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.55, roughness: 0.45 }));
-      glowHoverByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.3, roughness: 0.45 }));
+      glowByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.32, roughness: 0.5 }));
+      glowHoverByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.85, roughness: 0.5 }));
     }
 
     return { ghost, dim, dimHover, glowByLevel, glowHoverByLevel };
