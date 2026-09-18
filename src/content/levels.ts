@@ -46,7 +46,7 @@ export const levels: LevelEntry[] = [
   { id: 'prefrontal-cortex', name: 'Prefrontal cortex', plainName: 'Decisions', theme: 'regions', status: 'coming-soon',
     anatomy: { marker: [0, 25, 55] }, color: '#a3e635' },
   { id: 'hippocampus', name: 'Hippocampus', plainName: 'Memory', theme: 'regions', status: 'available',
-    anatomy: { nodePrefixes: ['Hippocampus'] }, color: '#c084fc' },
+    anatomy: { nodePrefixes: ['Hippocampus'] }, color: '#6366f1' },
   { id: 'amygdala', name: 'Amygdala', plainName: 'Fear', theme: 'regions', status: 'available',
     anatomy: { nodePrefixes: ['Amygdala'] }, color: '#fbbf24' },
   { id: 'cerebellum', name: 'Cerebellum', plainName: 'Balance', theme: 'regions', status: 'available',
