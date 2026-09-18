@@ -22,16 +22,25 @@ const levelForNode = (name: string): LevelEntry | undefined =>
 function HubBrain({ hoveredId, onHover, onEnter }: HoverProps) {
   const { scene } = useGLTF(MODEL_URL, DRACO_PATH);
 
-  const materials = useMemo(
-    () => ({
-      ghost: new THREE.MeshStandardMaterial({ color: '#d9a8b4', roughness: 0.9, transparent: true, opacity: 0.22, depthWrite: false }),
-      glow: new THREE.MeshStandardMaterial({ color: '#fbbf24', emissive: '#f59e0b', emissiveIntensity: 0.6, roughness: 0.45 }),
-      glowHover: new THREE.MeshStandardMaterial({ color: '#fde68a', emissive: '#f59e0b', emissiveIntensity: 1.2, roughness: 0.45 }),
-      dim: new THREE.MeshStandardMaterial({ color: '#64748b', emissive: '#334155', emissiveIntensity: 0.25, roughness: 0.8 }),
-      dimHover: new THREE.MeshStandardMaterial({ color: '#94a3b8', emissive: '#475569', emissiveIntensity: 0.5, roughness: 0.8 }),
-    }),
-    []
-  );
+  const materials = useMemo(() => {
+    const ghost = new THREE.MeshStandardMaterial({ color: '#d9a8b4', roughness: 0.9, transparent: true, opacity: 0.22, depthWrite: false });
+    const dim = new THREE.MeshStandardMaterial({ color: '#64748b', emissive: '#334155', emissiveIntensity: 0.25, roughness: 0.8 });
+    const dimHover = new THREE.MeshStandardMaterial({ color: '#94a3b8', emissive: '#475569', emissiveIntensity: 0.5, roughness: 0.8 });
+
+    // Each available level gets its own signature color (matching the tint it uses once
+    // you're inside it), so regions read as distinct structures at a glance instead of one
+    // undifferentiated glowing mass once several levels are unlocked.
+    const glowByLevel = new Map<string, THREE.MeshStandardMaterial>();
+    const glowHoverByLevel = new Map<string, THREE.MeshStandardMaterial>();
+    for (const level of levels) {
+      if (level.status !== 'available') continue;
+      const color = new THREE.Color(level.color);
+      glowByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.55, roughness: 0.45 }));
+      glowHoverByLevel.set(level.id, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.3, roughness: 0.45 }));
+    }
+
+    return { ghost, dim, dimHover, glowByLevel, glowHoverByLevel };
+  }, []);
 
   /** Label anchors for node-based levels: centroid of their matched meshes. */
   const centroids = useMemo(() => {
@@ -64,7 +73,7 @@ function HubBrain({ hoveredId, onHover, onEnter }: HoverProps) {
       const hovered = level.id === hoveredId;
       child.material =
         level.status === 'available'
-          ? hovered ? materials.glowHover : materials.glow
+          ? (hovered ? materials.glowHoverByLevel : materials.glowByLevel).get(level.id)!
           : hovered ? materials.dimHover : materials.dim;
       child.renderOrder = 1;
     });
@@ -112,9 +121,9 @@ function HubBrain({ hoveredId, onHover, onEnter }: HoverProps) {
             >
               <sphereGeometry args={[isHovered ? 5.5 : 4.5, 20, 20]} />
               <meshStandardMaterial
-                color={available ? '#fbbf24' : '#64748b'}
-                emissive={available ? '#f59e0b' : '#334155'}
-                emissiveIntensity={isHovered ? 1.2 : 0.6}
+                color={available ? l.color : '#64748b'}
+                emissive={available ? l.color : '#334155'}
+                emissiveIntensity={isHovered ? 1.3 : available ? 0.55 : 0.6}
               />
             </mesh>
           );
